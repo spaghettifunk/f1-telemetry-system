@@ -63,17 +63,3 @@ services:
     volumes:
       - ./configs/clickhouse/kafka.xml:/etc/clickhouse-server/config.d/kafka.xml
       - ./data/clickhouse:/var/lib/clickhouse
-
-  grafana:
-    image: grafana/grafana:8.4.4
-    container_name: grafana
-    hostname: grafana    
-    environment:
-      - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
-      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource 
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=password
-    ports:
-      - "3000:3000"
-    expose:
-      - 3000

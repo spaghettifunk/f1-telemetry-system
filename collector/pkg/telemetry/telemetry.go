@@ -142,12 +142,12 @@ func (c *Client) Collect() {
 		msg["throttle_applied"] = math.Round(float64(car.Throttle)*100) / 100
 
 		for i, wheel := range wheelOrderArr {
-			breakID := fmt.Sprintf("break_%s", wheel)
+			brakeID := fmt.Sprintf("brake_%s", wheel)
 			tyrePressureID := fmt.Sprintf("tyre_pressure_%s", wheel)
 			tyreInnerTemperatureID := fmt.Sprintf("tyre_inner_temperature_%s", wheel)
 			tyreSurfaceTemperatureID := fmt.Sprintf("tyre_surface_temperature_%s", wheel)
 
-			msg[breakID] = car.BrakesTemperature[i]
+			msg[brakeID] = car.BrakesTemperature[i]
 			msg[tyrePressureID] = math.Round(float64(car.TyresPressure[i])*100) / 100
 			msg[tyreInnerTemperatureID] = car.TyresInnerTemperature[i]
 			msg[tyreSurfaceTemperatureID] = car.TyresSurfaceTemperature[i]
