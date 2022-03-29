@@ -71,21 +71,25 @@ func (c *Client) Collect() {
 	c.OnSessionPacket(func(packet *packets.PacketSessionData) {
 		msg := map[string]interface{}{}
 
-		msg["weather"] = Weather(packet.Weather)
-		msg["session_type"] = session.Session(packet.SessionType)
+		msg["weather"] = Weather(packet.Weather).String()
+		msg["session_type"] = session.Session(packet.SessionType).String()
 		msg["track_temperature"] = packet.TrackTemperature
 		msg["air_temperature"] = packet.AirTemperature
-		msg["track_name"] = track.Track(packet.TrackID)
+		msg["track_name"] = track.Track(packet.TrackID).String()
 
 		// enrich with default metadata
+		msg["user_id"] = c.UserID
 		msg["session_id"] = packet.Header.SessionUID
-		msg["datetime"] = time.Now().UTC().String()
+		msg["time"] = time.Now().Format("2006-01-02 15:04:05")
 
 		// write to producer
 		b, err := json.Marshal(msg)
 		if err != nil {
 			panic(err)
 		}
+
+		// DEBUG
+		log.Println(string(b))
 
 		c.ProducerLog.Write(producers.PacketLog{
 			Name:    "session",
@@ -107,14 +111,18 @@ func (c *Client) Collect() {
 		}
 
 		// enrich with default metadata
+		msg["user_id"] = c.UserID
 		msg["session_id"] = packet.Header.SessionUID
-		msg["datetime"] = time.Now().UTC().String()
+		msg["time"] = time.Now().Format("2006-01-02 15:04:05")
 
 		// write to producer
 		b, err := json.Marshal(msg)
 		if err != nil {
 			panic(err)
 		}
+
+		// DEBUG
+		log.Println(string(b))
 
 		c.ProducerLog.Write(producers.PacketLog{
 			Name:    "event",
@@ -127,10 +135,11 @@ func (c *Client) Collect() {
 
 		car := packet.Self()
 
-		msg["speed"] = float64(car.Speed)
-		msg["engine_rpm"] = float64(car.EngineRPM)
-		msg["engine_temperature"] = float64(car.EngineTemperature)
-		msg["brake_applied"] = float64(car.Brake)
+		msg["speed"] = car.Speed
+		msg["engine_rpm"] = car.EngineRPM
+		msg["engine_temperature"] = car.EngineTemperature
+		msg["brake_applied"] = math.Round(float64(car.Brake)*100) / 100
+		msg["throttle_applied"] = math.Round(float64(car.Throttle)*100) / 100
 
 		for i, wheel := range wheelOrderArr {
 			breakID := fmt.Sprintf("break_%s", wheel)
@@ -138,21 +147,25 @@ func (c *Client) Collect() {
 			tyreInnerTemperatureID := fmt.Sprintf("tyre_inner_temperature_%s", wheel)
 			tyreSurfaceTemperatureID := fmt.Sprintf("tyre_surface_temperature_%s", wheel)
 
-			msg[breakID] = float64(car.BrakesTemperature[i])
-			msg[tyrePressureID] = float64(car.TyresPressure[i])
-			msg[tyreInnerTemperatureID] = float64(car.TyresInnerTemperature[i])
-			msg[tyreSurfaceTemperatureID] = float64(car.TyresSurfaceTemperature[i])
+			msg[breakID] = car.BrakesTemperature[i]
+			msg[tyrePressureID] = math.Round(float64(car.TyresPressure[i])*100) / 100
+			msg[tyreInnerTemperatureID] = car.TyresInnerTemperature[i]
+			msg[tyreSurfaceTemperatureID] = car.TyresSurfaceTemperature[i]
 		}
 
 		// enrich with default metadata
+		msg["user_id"] = c.UserID
 		msg["session_id"] = packet.Header.SessionUID
-		msg["datetime"] = time.Now().UTC().String()
+		msg["time"] = time.Now().Format("2006-01-02 15:04:05")
 
 		// write to producer
 		b, err := json.Marshal(msg)
 		if err != nil {
 			panic(err)
 		}
+
+		// DEBUG
+		log.Println(string(b))
 
 		c.ProducerLog.Write(producers.PacketLog{
 			Name:    "car_telemetry",
@@ -165,20 +178,24 @@ func (c *Client) Collect() {
 
 		lap := packet.Self()
 
-		msg["result_status"] = ResultStatus(lap.ResultStatus)
+		msg["result_status"] = ResultStatus(lap.ResultStatus).String()
 		msg["grid_start_position"] = lap.GridPosition
 		msg["current_position"] = lap.CarPosition
 		msg["current_lap"] = lap.CurrentLapNum
 
 		// enrich with default metadata
+		msg["user_id"] = c.UserID
 		msg["session_id"] = packet.Header.SessionUID
-		msg["datetime"] = time.Now().UTC().String()
+		msg["time"] = time.Now().Format("2006-01-02 15:04:05")
 
 		// write to producer
 		b, err := json.Marshal(msg)
 		if err != nil {
 			panic(err)
 		}
+
+		// DEBUG
+		log.Println(string(b))
 
 		c.ProducerLog.Write(producers.PacketLog{
 			Name:    "lap",
@@ -192,14 +209,15 @@ func (c *Client) Collect() {
 		status := packet.Self()
 
 		msg["tyres_age"] = status.TyresAgeLaps
-		msg["fuel_mix"] = FuelMix(status.FuelMix)
-		msg["fuel_capacity"] = float64(status.FuelCapacity)
-		msg["fuel_current"] = float64(status.FuelInTank)
-		msg["fuel_remaining_in_laps"] = float64(status.FuelRemainingLaps)
+		msg["fuel_mix"] = FuelMix(status.FuelMix).String()
+		msg["fuel_capacity"] = math.Round(float64(status.FuelCapacity)*100) / 100
+		msg["fuel_current"] = math.Round(float64(status.FuelInTank)*100) / 100
+		msg["fuel_remaining_in_laps"] = math.Round(float64(status.FuelRemainingLaps)*100) / 100
 
 		// enrich with default metadata
+		msg["user_id"] = c.UserID
 		msg["session_id"] = packet.Header.SessionUID
-		msg["datetime"] = time.Now().UTC().String()
+		msg["time"] = time.Now().Format("2006-01-02 15:04:05")
 
 		// write to producer
 		b, err := json.Marshal(msg)
@@ -207,11 +225,13 @@ func (c *Client) Collect() {
 			panic(err)
 		}
 
+		// DEBUG
+		log.Println(string(b))
+
 		c.ProducerLog.Write(producers.PacketLog{
 			Name:    "car_status",
 			Message: b,
 		})
-
 	})
 
 	// TODO: interesting graphs can come out from this data...
@@ -219,14 +239,18 @@ func (c *Client) Collect() {
 		msg := map[string]interface{}{}
 
 		// enrich with default metadata
+		msg["user_id"] = c.UserID
 		msg["session_id"] = packet.Header.SessionUID
-		msg["datetime"] = time.Now().UTC().String()
+		msg["time"] = time.Now().Format("2006-01-02 15:04:05")
 
 		// write to producer
 		b, err := json.Marshal(msg)
 		if err != nil {
 			panic(err)
 		}
+
+		// DEBUG
+		log.Println(string(b))
 
 		c.ProducerLog.Write(producers.PacketLog{
 			Name:    "motion_data",

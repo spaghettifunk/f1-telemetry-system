@@ -20,12 +20,13 @@ var rootCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-
 		client, err := telemetry.New("0.0.0.0", 20777, telemetry.WithKafka("localhost:9092"))
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
+
+		log.Printf("Initiating collection of packets on %s:%d", "0.0.0.0", 20777)
 
 		// wait exit signal
 		c := make(chan os.Signal, 1)
