@@ -4,7 +4,7 @@ CREATE TABLE session (
     date ALIAS toDate(time),
     session_id Int32,
     air_temperature Nullable(Int32) DEFAULT NULL, 
-    session_type Nullable(Int32) DEFAULT NULL,
+    session_type Nullable(String) DEFAULT NULL,
     track_name Nullable(String) DEFAULT NULL,
     track_temperature Nullable(Decimal(5,2)) DEFAULT NULL,
     weather Nullable(String) DEFAULT NULL
@@ -42,7 +42,8 @@ CREATE TABLE event (
     time DateTime,
     date ALIAS toDate(time),
     session_id Int32,
-    fastest_lap Nullable(DateTime) DEFAULT NULL
+    fastest_lap_ms Nullable(Int64) DEFAULT NULL,
+    fastest_lap_str Nullable(String) DEFAULT NULL
 ) Engine = MergeTree
 PARTITION BY toYYYYMM(time)
 ORDER BY (session_id, time);
@@ -51,7 +52,8 @@ CREATE TABLE event_queue (
     user_id UUID,
     time DateTime ,
     session_id Int32,
-    fastest_lap Nullable(DateTime) DEFAULT NULL
+    fastest_lap_ms Nullable(Int64) DEFAULT NULL,
+    fastest_lap_str Nullable(String) DEFAULT NULL
 )
 ENGINE = Kafka
 SETTINGS kafka_broker_list = 'kafka:29092',
@@ -62,7 +64,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
 
 
 CREATE MATERIALIZED VIEW event_queue_mv TO event AS
-SELECT user_id, session_id, time, fastest_lap
+SELECT user_id, session_id, time, fastest_lap_ms, fastest_lap_str
 FROM event_queue;
 
 ---------------------

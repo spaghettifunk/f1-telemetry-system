@@ -17,3 +17,5 @@
 data/*
 
 testing/*
+
+.DS_Store

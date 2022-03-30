@@ -14,6 +14,7 @@ declare module 'vue' {
     NButton: typeof import('naive-ui')['NButton']
     NDialogProvider: typeof import('naive-ui')['NDialogProvider']
     NDropdown: typeof import('naive-ui')['NDropdown']
+    NEmpty: typeof import('naive-ui')['NEmpty']
     NGi: typeof import('naive-ui')['NGi']
     NGrid: typeof import('naive-ui')['NGrid']
     NIcon: typeof import('naive-ui')['NIcon']
@@ -28,6 +29,8 @@ declare module 'vue' {
     NPageHeader: typeof import('naive-ui')['NPageHeader']
     NSpace: typeof import('naive-ui')['NSpace']
     NStatistic: typeof import('naive-ui')['NStatistic']
+    NTimeline: typeof import('naive-ui')['NTimeline']
+    NTimelineItem: typeof import('naive-ui')['NTimelineItem']
     Sidebar: typeof import('./src/components/Sidebar.vue')['default']
   }
 }
