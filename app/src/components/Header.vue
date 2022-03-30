@@ -11,7 +11,10 @@ const globalStore = useGlobalStore();
   <div v-if="globalStore.selectedSession === null"></div>
   <div v-else>
     <n-page-header>
-      <n-grid :cols="6">
+      <n-grid :cols="7">
+        <n-gi>
+          <n-statistic label="Session ID" v-model:value="globalStore.selectedSession.sessionID" />
+        </n-gi>
         <n-gi>
           <n-statistic label="Current Lap" v-model:value="globalStore.selectedSession.sessionID" />
         </n-gi>

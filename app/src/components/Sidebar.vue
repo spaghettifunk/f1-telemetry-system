@@ -6,6 +6,13 @@ const globalStore = useGlobalStore();
 
 const setSelectedSession = (session: Session) => {
     globalStore.selectedSession = session;
+
+    // fetch all the data
+    globalStore.fetchEvents(session.sessionID);
+    globalStore.fetchLaps(session.sessionID);
+    globalStore.fetchCarTelemetries(session.sessionID);
+    globalStore.fetchCarStatuses(session.sessionID);
+    globalStore.fetchMotionsData(session.sessionID);
 }
 
 </script>

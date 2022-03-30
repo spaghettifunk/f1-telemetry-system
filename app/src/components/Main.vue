@@ -19,7 +19,9 @@ const globalStore = useGlobalStore();
             </template>
         </n-empty>
     </div>
-    <div v-else></div>
+    <div v-else>
+        <!-- render all the graphs -->
+    </div>
 </template>
 
 <style>
