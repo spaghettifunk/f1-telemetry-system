@@ -4,7 +4,7 @@ CREATE TABLE session (
     date ALIAS toDate(time),
     session_id Int32,
     air_temperature Nullable(Int32) DEFAULT NULL, 
-    session_type Nullable(Int32) DEFAULT NULL,
+    session_type Nullable(String) DEFAULT NULL,
     track_name Nullable(String) DEFAULT NULL,
     track_temperature Nullable(Decimal(5,2)) DEFAULT NULL,
     weather Nullable(String) DEFAULT NULL
@@ -42,7 +42,8 @@ CREATE TABLE event (
     time DateTime,
     date ALIAS toDate(time),
     session_id Int32,
-    fastest_lap Nullable(DateTime) DEFAULT NULL
+    fastest_lap_ms Nullable(Int64) DEFAULT NULL,
+    fastest_lap_str Nullable(String) DEFAULT NULL
 ) Engine = MergeTree
 PARTITION BY toYYYYMM(time)
 ORDER BY (session_id, time);
@@ -51,7 +52,8 @@ CREATE TABLE event_queue (
     user_id UUID,
     time DateTime ,
     session_id Int32,
-    fastest_lap Nullable(DateTime) DEFAULT NULL
+    fastest_lap_ms Nullable(Int64) DEFAULT NULL,
+    fastest_lap_str Nullable(String) DEFAULT NULL
 )
 ENGINE = Kafka
 SETTINGS kafka_broker_list = 'kafka:29092',
@@ -62,7 +64,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
 
 
 CREATE MATERIALIZED VIEW event_queue_mv TO event AS
-SELECT user_id, session_id, time, fastest_lap
+SELECT user_id, session_id, time, fastest_lap_ms, fastest_lap_str
 FROM event_queue;
 
 ---------------------
@@ -77,10 +79,11 @@ CREATE TABLE car_telemetry (
     engine_rpm Nullable(Int32) DEFAULT NULL,
     engine_temperature Nullable(Int32) DEFAULT NULL,
     brake_applied Nullable(Decimal(5,2)) DEFAULT NULL,
-    break_rl Nullable(Int32) DEFAULT NULL,
-    break_rr Nullable(Int32) DEFAULT NULL,
-    break_fl Nullable(Int32) DEFAULT NULL,
-    break_fr Nullable(Int32) DEFAULT NULL,
+    throttle_applied Nullable(Decimal(5,2)) DEFAULT NULL,
+    brake_rl Nullable(Int32) DEFAULT NULL,
+    brake_rr Nullable(Int32) DEFAULT NULL,
+    brake_fl Nullable(Int32) DEFAULT NULL,
+    brake_fr Nullable(Int32) DEFAULT NULL,
     tyre_pressure_rl Nullable(Decimal(5,2)) DEFAULT NULL,
     tyre_pressure_rr Nullable(Decimal(5,2)) DEFAULT NULL,
     tyre_pressure_fl Nullable(Decimal(5,2)) DEFAULT NULL,
@@ -105,10 +108,11 @@ CREATE TABLE car_telemetry_queue (
     engine_rpm Nullable(Int32) DEFAULT NULL,
     engine_temperature Nullable(Int32) DEFAULT NULL,
     brake_applied Nullable(Decimal(5,2)) DEFAULT NULL,
-    break_rl Nullable(Int32) DEFAULT NULL,
-    break_rr Nullable(Int32) DEFAULT NULL,
-    break_fl Nullable(Int32) DEFAULT NULL,
-    break_fr Nullable(Int32) DEFAULT NULL,
+    throttle_applied Nullable(Decimal(5,2)) DEFAULT NULL,
+    brake_rl Nullable(Int32) DEFAULT NULL,
+    brake_rr Nullable(Int32) DEFAULT NULL,
+    brake_fl Nullable(Int32) DEFAULT NULL,
+    brake_fr Nullable(Int32) DEFAULT NULL,
     tyre_pressure_rl Nullable(Decimal(5,2)) DEFAULT NULL,
     tyre_pressure_rr Nullable(Decimal(5,2)) DEFAULT NULL,
     tyre_pressure_fl Nullable(Decimal(5,2)) DEFAULT NULL,
@@ -135,10 +139,11 @@ SELECT user_id, session_id, time, speed,
     engine_rpm,
     engine_temperature,
     brake_applied,
-    break_rl,
-    break_rr,
-    break_fl,
-    break_fr,
+    throttle_applied,
+    brake_rl,
+    brake_rr,
+    brake_fl,
+    brake_fr,
     tyre_pressure_rl,
     tyre_pressure_rr,
     tyre_pressure_fl,

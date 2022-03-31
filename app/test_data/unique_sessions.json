@@ -1,0 +1,22 @@
+[
+	{
+		"session_id" : 920593753,
+		"user_id" : "7f443b8f-1cad-4d00-ac25-2f1fe444d600",
+		"time": "2022-03-28 21:38:03.000",
+		"air_temperature" : 24,
+		"session_type" : null,
+		"track_name" : "Melbourne",
+		"track_temperature" : 32.00,
+		"weather" : "Clean"
+	},
+	{
+		"session_id" : 842310851,
+		"user_id" : "7f443b8f-1cad-4d00-ac25-2f1fe444d600",
+		"time": "2022-03-28 21:21:12.000",
+		"air_temperature" : 29,
+		"session_type" : null,
+		"track_name" : "Sakhir",
+		"track_temperature" : 36.00,
+		"weather" : "Clean"
+	}
+]

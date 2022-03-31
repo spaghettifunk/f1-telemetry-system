@@ -64,6 +64,13 @@ func New(address string, port int, producer producers.ProducerLog) (*Client, err
 	return c, nil
 }
 
+type Timespan time.Duration
+
+func (t Timespan) Format(format string) string {
+	z := time.Unix(0, 0).UTC()
+	return z.Add(time.Duration(t)).Format(format)
+}
+
 func (c *Client) Collect() {
 	log.Println("Collecting events...")
 
@@ -104,8 +111,9 @@ func (c *Client) Collect() {
 		case event.FastestLap:
 			fp := packet.EventDetails.(*packets.FastestLap)
 			if fp.VehicleIdx == packet.Header.PlayerCarIndex {
-				integ, decim := math.Modf(float64(fp.LapTime))
-				msg["fastest_lap"] = time.Unix(int64(integ), int64(decim*(1e9))).String()
+				fast := time.Duration(float64(fp.LapTime) * float64(time.Second))
+				msg["fastest_lap_ms"] = fast.Milliseconds()
+				msg["fastest_lap_str"] = Timespan(fast).Format("1:04.567")
 			}
 			break
 		}
@@ -142,12 +150,12 @@ func (c *Client) Collect() {
 		msg["throttle_applied"] = math.Round(float64(car.Throttle)*100) / 100
 
 		for i, wheel := range wheelOrderArr {
-			breakID := fmt.Sprintf("break_%s", wheel)
+			brakeID := fmt.Sprintf("brake_%s", wheel)
 			tyrePressureID := fmt.Sprintf("tyre_pressure_%s", wheel)
 			tyreInnerTemperatureID := fmt.Sprintf("tyre_inner_temperature_%s", wheel)
 			tyreSurfaceTemperatureID := fmt.Sprintf("tyre_surface_temperature_%s", wheel)
 
-			msg[breakID] = car.BrakesTemperature[i]
+			msg[brakeID] = car.BrakesTemperature[i]
 			msg[tyrePressureID] = math.Round(float64(car.TyresPressure[i])*100) / 100
 			msg[tyreInnerTemperatureID] = car.TyresInnerTemperature[i]
 			msg[tyreSurfaceTemperatureID] = car.TyresSurfaceTemperature[i]
