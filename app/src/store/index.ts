@@ -1,12 +1,13 @@
 import { Session, Event, Lap, CarTelemetry, CarStatus, MotionData } from '../models/telemetry.model';
 import { defineStore } from 'pinia';
+import axios from "axios"
 
 export type GlobalState = {
     sessions: Session[] | [];
-    selectedSession: Session | null;
+    sessionData: Session[] | [];
 
     // this data is queried every time the session changes
-    events: Event[] | [];
+    event: Event | null;
     laps: Lap[] | [];
     carTelemetries: CarTelemetry[] | [];
     carStatuses: CarStatus[] | [];
@@ -18,50 +19,31 @@ export const useGlobalStore = defineStore({
     state: () => (
         {
             // all data
-            sessions: [{
-                sessionID: 920593753,
-                userID: "7f443b8f-1cad-4d00-ac25-2f1fe444d600",
-                time: "2022-03-28 21:38:03.000",
-                airTemperature: 24,
-                sessionType: "P1",
-                trackName: "Melbourne",
-                trackTemperature: 32.00,
-                weather: "Clean"
-            },
-            {
-                sessionID: 842310851,
-                userID: "7f443b8f-1cad-4d00-ac25-2f1fe444d600",
-                time: "2022-03-28 21:21:12.000",
-                airTemperature: 29,
-                sessionType: "P1",
-                trackName: "Sakhir",
-                trackTemperature: 36.00,
-                weather: "Clean"
-            }],
-            selectedSession: null,
-            events: [],
+            sessions: [],
+            sessionData: [],
+            event: null,
             laps: [],
             carTelemetries: [],
             carStatuses: [],
             motionsData: [],
         } as GlobalState),
     getters: {
-        getSelectedSession(): Session | null {
-            return this.selectedSession;
+        getSessionData(): Session[] | [] {
+            return this.sessionData;
         },
-        getEvents(): Event[] | null {
-            return this.events;
+        getEvents(): Event | null {
+            return this.event;
         },
-        getLaps(): Lap[] | null {
+        getLaps(): Lap[] | [] {
             return this.laps;
         },
-        getCarTelemetries(): CarTelemetry[] | null {
+        getCarTelemetries(): CarTelemetry[] | [] {
             return this.carTelemetries;
         },
-        getCarStatuses(): CarStatus[] | null {
+        getCarStatuses(): CarStatus[] | [] {
             return this.carStatuses;
         },
-        getMotionsData(): MotionData[] | null {
+        getMotionsData(): MotionData[] | [] {
             return this.motionsData;
         }
     },
@@ -69,40 +51,156 @@ export const useGlobalStore = defineStore({
         allSessionsByUserID(userID: string): any {
             return this.sessions.filter(session => session.userID == userID);
         },
-        fetchEvents(sessionID: number) {
-            // contact DB
-            // set data locally
-            this.events = [];
-
-            return true;
+        async fetchSessions(userID: string) {
+            try {
+                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions`);
+                this.sessions = result.data.data.map((row: any) => {
+                    return {
+                        userID: userID,
+                        sessionID: row.session_id,
+                        time: row.time,
+                        sessionType: row.session_type,
+                        trackName: row.track_name,
+                    }
+                });
+            }
+            catch (error) {
+                alert(error)
+                console.error(error)
+            }
         },
-        fetchLaps(sessionID: number): boolean {
-            // contact DB
-            // set data locally
-            this.laps = [];
-
-            return true;
+        async fetchSessionData(userID: string, sessionID: number) {
+            try {
+                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}`);
+                this.sessionData = result.data.data.map((row: any) => {
+                    return {
+                        userID: userID,
+                        sessionID: row.session_id,
+                        time: row.time,
+                        airTemperature: row.air_temperature,
+                        sessionType: row.session_type,
+                        trackName: row.track_name,
+                        trackTemperature: row.track_temperature,
+                        weather: row.weather,
+                    }
+                });
+            }
+            catch (error) {
+                alert(error)
+                console.error(error)
+            }
         },
-        fetchCarTelemetries(sessionID: number) {
-            // contact DB
-            // set data locally
-            this.carTelemetries = [];
-
-            return true;
+        async fetchEvents(userID: string, sessionID: number) {
+            try {
+                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/events`);
+                this.event = result.data.data.map((row: any) => {
+                    return {
+                        userID: userID,
+                        sessionID: sessionID,
+                        time: row.time,
+                        fastestLapMs: row.fastest_lap_ms,
+                        fastestLapStr: row.fastest_lap_str
+                    }
+                });
+            }
+            catch (error) {
+                alert(error)
+                console.error(error)
+            }
         },
-        fetchCarStatuses(sessionID: number): boolean {
-            // contact DB
-            // set data locally
-            this.carStatuses = [];
-
-            return true;
+        async fetchLaps(userID: string, sessionID: number) {
+            try {
+                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/laps`);
+                this.laps = result.data.data.map((row: any) => {
+                    return {
+                        userID: userID,
+                        sessionID: sessionID,
+                        time: row.time,
+                        resultStatus: row.result_status,
+                        gridStartPosition: row.grid_start_position,
+                        currentPosition: row.current_position,
+                        currentLap: row.current_lap
+                    }
+                });
+            }
+            catch (error) {
+                alert(error)
+                console.error(error)
+            }
         },
-        fetchMotionsData(sessionID: number): boolean {
-            // contact DB
-            // set data locally
-            this.motionsData = [];
-
-            return true;
+        async fetchCarTelemetries(userID: string, sessionID: number) {
+            try {
+                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/telemetries`);
+                this.carTelemetries = result.data.data.map((row: any) => {
+                    return {
+                        userID: userID,
+                        sessionID: sessionID,
+                        time: row.time,
+                        speed: row.speed,
+                        engineRPM: row.engine_rpm,
+                        engineTemperature: row.engine_temperature,
+                        brakeApplied: row.break_applied,
+                        throttleApplied: row.throttle_applied,
+                        brakeRL: row.brake_rl,
+                        brakeRR: row.brake_rr,
+                        brakeFL: row.brake_fl,
+                        brakeFR: row.brake_fr,
+                        tyrePressureRL: row.tyre_pressure_rl,
+                        tyrePressureRR: row.tyre_pressure_rr,
+                        tyrePressureFL: row.tyre_pressure_fl,
+                        tyrePressureFR: row.tyre_pressure_fr,
+                        tyreInnerTemperatureRL: row.tyre_inner_temperature_rl,
+                        tyreInnerTemperatureRR: row.tyre_inner_temperature_rr,
+                        tyreInnerTemperatureFL: row.tyre_inner_temperature_fl,
+                        tyreInnerTemperatureFR: row.tyre_inner_temperature_fr,
+                        tyreSurfaceTemperatureRL: row.tyre_surface_temperature_rl,
+                        tyreSurfaceTemperatureRR: row.tyre_surface_temperature_rr,
+                        tyreSurfaceTemperatureFL: row.tyre_surface_temperature_fl,
+                        tyreSurfaceTemperatureFR: row.tyre_surface_temperature_rf,
+                    }
+                });
+            }
+            catch (error) {
+                alert(error)
+                console.error(error)
+            }
+        },
+        async fetchCarStatuses(userID: string, sessionID: number) {
+            try {
+                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/statuses`);
+                this.carStatuses = result.data.data.map((row: any) => {
+                    return {
+                        userID: userID,
+                        sessionID: sessionID,
+                        time: row.time,
+                        tyresAge: row.tyres_age,
+                        fuelMix: row.fuel_mix,
+                        fuelCapacity: row.fuel_capacity,
+                        fuelCurrent: row.fuel_current,
+                        fuelRemainingInLaps: row.fuel_remanining_in_laps,
+                    }
+                });
+            }
+            catch (error) {
+                alert(error)
+                console.error(error)
+            }
+        },
+        async fetchMotionsData(userID: string, sessionID: number) {
+            try {
+                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/motions-data`);
+                this.motionsData = result.data.data.map((row: any) => {
+                    return {
+                        userID: userID,
+                        sessionID: sessionID,
+                        time: row.time,
+                    }
+                });
+            }
+            catch (error) {
+                alert(error)
+                console.error(error)
+            }
         }
     },
 });

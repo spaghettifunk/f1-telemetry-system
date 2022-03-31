@@ -1,5 +1,5 @@
 import express from 'express';
-
+import cors from 'cors';
 import routes from './routes';
 
 class App {
@@ -13,6 +13,12 @@ class App {
     }
 
     middlewares() {
+        const allowedOrigins = ['http://localhost:3000'];
+        const options: cors.CorsOptions = {
+            origin: allowedOrigins
+        };
+
+        this.server.use(cors(options));
         this.server.use(express.json());
     }
 

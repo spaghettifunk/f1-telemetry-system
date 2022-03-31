@@ -11,5 +11,11 @@ export default defineConfig({
     Components({
       resolvers: [NaiveUiResolver()]
     })
-  ]
+  ],
+  server: {
+    cors: true
+  },
+  preview: {
+    cors: true
+  }
 })

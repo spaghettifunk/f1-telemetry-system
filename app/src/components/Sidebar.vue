@@ -1,18 +1,23 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { Session } from '../models/telemetry.model';
 import { useGlobalStore } from '../store/index';
 
 const globalStore = useGlobalStore();
+const userID = '7f443b8f-1cad-4d00-ac25-2f1fe444d600';
+
+onMounted(() => {
+    globalStore.fetchSessions(userID);
+})
 
 const setSelectedSession = (session: Session) => {
-    globalStore.selectedSession = session;
-
     // fetch all the data
-    globalStore.fetchEvents(session.sessionID);
-    globalStore.fetchLaps(session.sessionID);
-    globalStore.fetchCarTelemetries(session.sessionID);
-    globalStore.fetchCarStatuses(session.sessionID);
-    globalStore.fetchMotionsData(session.sessionID);
+    globalStore.fetchSessionData(userID, session.sessionID);
+    globalStore.fetchEvents(userID, session.sessionID);
+    globalStore.fetchLaps(userID, session.sessionID);
+    globalStore.fetchCarTelemetries(userID, session.sessionID);
+    globalStore.fetchCarStatuses(userID, session.sessionID);
+    globalStore.fetchMotionsData(userID, session.sessionID);
 }
 
 </script>
@@ -23,7 +28,7 @@ const setSelectedSession = (session: Session) => {
         <n-timeline>
             <n-timeline-item
                 style="cursor:pointer;"
-                v-for="session in globalStore.allSessionsByUserID('7f443b8f-1cad-4d00-ac25-2f1fe444d600')"
+                v-for="session in globalStore.allSessionsByUserID(userID)"
                 :key="session.sessionID"
                 type="info"
                 v-bind:title="'Session: ' + session.sessionType"
@@ -31,6 +36,7 @@ const setSelectedSession = (session: Session) => {
                 v-bind:time="session.time"
                 @click="setSelectedSession(session)"
             />
+            <n-timeline-item content="Where it all started" />
         </n-timeline>
     </n-space>
 </template>

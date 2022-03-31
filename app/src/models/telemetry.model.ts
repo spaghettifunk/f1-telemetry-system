@@ -41,18 +41,18 @@ export interface CarTelemetry {
     brakeRR?: number;
     brakeFL?: number;
     brakeFR?: number;
-    tyre_pressureRL?: number;
-    tyre_pressureRR?: number;
-    tyre_pressureFL?: number;
-    tyre_pressureFR?: number;
-    tyre_inner_temperatureRL?: number;
-    tyre_inner_temperatureRR?: number;
-    tyre_inner_temperatureFL?: number;
-    tyre_inner_temperatureFR?: number;
-    tyre_surface_temperatureRL?: number;
-    tyre_surface_temperatureRR?: number;
-    tyre_surface_temperatureFL?: number;
-    tyre_surface_temperatureFR?: number;
+    tyrePressureRL?: number;
+    tyrePressureRR?: number;
+    tyrePressureFL?: number;
+    tyrePressureFR?: number;
+    tyreInnerTemperatureRL?: number;
+    tyreInnerTemperatureRR?: number;
+    tyreInnerTemperatureFL?: number;
+    tyreInnerTemperatureFR?: number;
+    tyreSurfaceTemperatureRL?: number;
+    tyreSurfaceTemperatureRR?: number;
+    tyreSurfaceTemperatureFL?: number;
+    tyreSurfaceTemperatureFR?: number;
 }
 
 export interface CarStatus {
