@@ -2,12 +2,16 @@
 import { ArrowLeft } from '@vicons/carbon'
 import { useGlobalStore } from '../store/index';
 
+import Engine from '../charts/Engine.vue';
+import TrackTemperatures from '../charts/TrackTemperatures.vue'
+import ThrottleBrake from '../charts/ThrottleBrake.vue';
+
 const globalStore = useGlobalStore();
 
 </script>
 
 <template>
-    <div v-if="globalStore.selectedSession === null">
+    <div v-if="globalStore.sessionData.length === 0">
         <n-empty description="Select a session from the Sidebar">
             <template #icon>
                 <n-icon>
@@ -19,10 +23,22 @@ const globalStore = useGlobalStore();
             </template>
         </n-empty>
     </div>
-    <div v-else>
-        <!-- render all the graphs -->
+    <div v-else class="main">
+        <Engine />
+        <TrackTemperatures />
+        <ThrottleBrake />
     </div>
 </template>
 
 <style>
+.main {
+    height: 100vh;
+    margin-top: 65px;
+    margin-bottom: 600px;
+}
+
+.chart {
+    height: 400px;
+    margin-bottom: 50px;
+}
 </style>

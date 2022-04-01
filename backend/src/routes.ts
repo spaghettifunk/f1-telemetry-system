@@ -48,12 +48,12 @@ routes.get('/users/:id/sessions/:sessionId', (req, res) => {
 
     telemetryServer
         .queryPromise(`
-        SELECT session_id, air_temperature, MIN(time) as time,
+        SELECT session_id, air_temperature, time,
         session_type, track_name,
         track_temperature, weather 
         FROM session 
         WHERE session_id = '${sessionID}' AND user_id = '${id}'
-        GROUP BY session_id, air_temperature,
+        GROUP BY session_id, air_temperature, time,
         session_type, track_name,
         track_temperature, weather
         ORDER BY time

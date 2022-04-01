@@ -18,7 +18,6 @@ export const useGlobalStore = defineStore({
     id: "globalStore",
     state: () => (
         {
-            // all data
             sessions: [],
             sessionData: [],
             event: null,
@@ -139,7 +138,7 @@ export const useGlobalStore = defineStore({
                         speed: row.speed,
                         engineRPM: row.engine_rpm,
                         engineTemperature: row.engine_temperature,
-                        brakeApplied: row.break_applied,
+                        brakeApplied: row.brake_applied,
                         throttleApplied: row.throttle_applied,
                         brakeRL: row.brake_rl,
                         brakeRR: row.brake_rr,
