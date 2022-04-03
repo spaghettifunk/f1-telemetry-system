@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"time"
 
@@ -87,7 +86,7 @@ func (c *Client) Collect() {
 			msg["driver_vehicle_id"] = i
 			msg["is_teammate"] = participant.MyTeam
 			msg["team_id"] = participant.TeamID
-			msg["team_name"] = team.Team(participant.TeamID)
+			msg["team_name"] = team.Team(participant.TeamID).String()
 
 			c.WriteToProducer(msg, "participants", packet.Header.SessionUID)
 		}
@@ -109,21 +108,21 @@ func (c *Client) Collect() {
 		// weather data
 		{
 			msg := map[string]interface{}{}
-			msg["weather_type"] = Weather(packet.Weather).String()
-			msg["track_temperature"] = packet.TrackTemperature
-			msg["air_temperature"] = packet.AirTemperature
-
 			for _, forecast := range packet.WeatherForecastSamples {
-				msg["forecast_weather_type"] = forecast.Weather
+				msg["weather_type"] = Weather(packet.Weather).String()
+				msg["track_temperature"] = packet.TrackTemperature
+				msg["air_temperature"] = packet.AirTemperature
+
+				msg["forecast_weather_type"] = Weather(forecast.Weather).String()
 				msg["forecast_air_temperature"] = forecast.AirTemperature
 				msg["forecast_air_temperature_change"] = forecast.AirTemperatureChange
 				msg["forecast_rain_percentage"] = forecast.RainPercentage
-				msg["forecast_time_offset"] = forecast.TimeOffset
+				msg["forecast_time_offset"] = getTimeInMS(forecast.TimeOffset)
 				msg["forecast_track_temperature"] = forecast.TrackTemperature
 				msg["forecast_track_temperature_change"] = forecast.TrackTemperatureChange
-			}
 
-			c.WriteToProducer(msg, "weather", packet.Header.SessionUID)
+				c.WriteToProducer(msg, "weather", packet.Header.SessionUID)
+			}
 		}
 	})
 
@@ -134,7 +133,8 @@ func (c *Client) Collect() {
 		case event.FastestLap:
 			fp := packet.EventDetails.(*packets.FastestLap)
 			msg["fastest_lap_ms"] = getTimeInMS(fp.LapTime)
-			msg["vehicle_id"] = fp.VehicleIdx
+			msg["driver_vehicle_id"] = fp.VehicleIdx
+			c.WriteToProducer(msg, "fastest_lap", packet.Header.SessionUID)
 			break
 		case event.Retirement:
 			rp := packet.EventDetails.(*packets.Retirement)
@@ -157,7 +157,7 @@ func (c *Client) Collect() {
 			msg["infrangement_type"] = Infrangement(pp.InfringementType).String()
 			msg["lap_number"] = pp.LapNum
 			msg["places_gained"] = pp.PlacesGained
-			msg["time"] = getTimeInSec(pp.Time)
+			msg["penalty_time"] = getTimeInMS(pp.Time)
 			msg["driver_vehicle_id"] = pp.VehicleIdx
 			msg["other_driver_vehicle_id"] = pp.OtherVehicleIdx
 			c.WriteToProducer(msg, "penalty", packet.Header.SessionUID)
@@ -181,7 +181,6 @@ func (c *Client) Collect() {
 			c.WriteToProducer(msg, "drive_through_served", packet.Header.SessionUID)
 			break
 		}
-		c.WriteToProducer(msg, "event", packet.Header.SessionUID)
 	})
 
 	c.OnCarTelemetryPacket(func(packet *packets.PacketCarTelemetryData) {
@@ -197,9 +196,9 @@ func (c *Client) Collect() {
 
 			msg["driver_vehicle_id"] = i
 			msg["speed"] = car.Speed
-			msg["throttle_applied"] = math.Round(float64(car.Throttle)*100) / 100
+			msg["throttle_applied"] = car.Throttle
 			msg["steer_applied"] = car.Steer
-			msg["brake_applied"] = math.Round(float64(car.Brake)*100) / 100
+			msg["brake_applied"] = car.Brake
 			msg["clutch_applied"] = car.Clutch
 			msg["gear"] = car.Gear
 			msg["engine_rpm"] = car.EngineRPM
@@ -213,11 +212,10 @@ func (c *Client) Collect() {
 				tyreSurfaceTemperatureID := fmt.Sprintf("tyre_surface_temperature_%s", wheel)
 
 				msg[brakeID] = car.BrakesTemperature[i]
-				msg[tyrePressureID] = math.Round(float64(car.TyresPressure[i])*100) / 100
+				msg[tyrePressureID] = car.TyresPressure[i]
 				msg[tyreInnerTemperatureID] = car.TyresInnerTemperature[i]
 				msg[tyreSurfaceTemperatureID] = car.TyresSurfaceTemperature[i]
 			}
-
 			c.WriteToProducer(msg, "car_telemetry", packet.Header.SessionUID)
 		}
 	})
@@ -233,14 +231,14 @@ func (c *Client) Collect() {
 			msg["sector_two_time_ms"] = getTimeInMS(lap.Sector2TimeInMS)
 			msg["lap_distance"] = lap.LapDistance
 			msg["total_distance"] = lap.TotalDistance
-			msg["safety_car_delta"] = getTimeInSec(lap.SafetyCarDelta)
+			msg["safety_car_delta"] = getTimeInMS(lap.SafetyCarDelta)
 			msg["current_position"] = lap.CarPosition
 			msg["current_lap"] = lap.CurrentLapNum
 			msg["pit_status"] = PitStatus(lap.PitStatus).String()
 			msg["num_pit_stops"] = lap.NumPitStops
 			msg["sector"] = lap.Sector
 			msg["current_lap_invalid"] = lap.CurrentLapInvalid
-			msg["penalties_sec"] = getTimeInSec(lap.Penalties)
+			msg["penalties_sec"] = getTimeInMS(lap.Penalties)
 			msg["num_warnings"] = lap.Warnings
 			msg["num_unserved_drive_through_penalties"] = lap.NumUnservedDriveThroughPens
 			msg["num_unserved_stop_go_penalties"] = lap.NumUnservedStopGoPens
@@ -261,11 +259,10 @@ func (c *Client) Collect() {
 
 		for i, status := range packet.CarStatusData {
 			msg["driver_vehicle_id"] = i
-
 			msg["fuel_mix"] = FuelMix(status.FuelMix).String()
-			msg["fuel_capacity"] = math.Round(float64(status.FuelCapacity)*100) / 100
-			msg["fuel_current"] = math.Round(float64(status.FuelInTank)*100) / 100
-			msg["fuel_remaining_in_laps"] = math.Round(float64(status.FuelRemainingLaps)*100) / 100
+			msg["fuel_capacity"] = status.FuelCapacity
+			msg["fuel_current"] = status.FuelInTank
+			msg["fuel_remaining_in_laps"] = status.FuelRemainingLaps
 			msg["max_rpm"] = status.MaxRPM
 			msg["idle_rpm"] = status.IdleRPM
 			msg["max_gears"] = status.MaxGears
@@ -273,7 +270,7 @@ func (c *Client) Collect() {
 			msg["actual_tyre_compound"] = ActualTyreCompound(status.ActualTyreCompound).String()
 			msg["visual_tyre_compound"] = VisualTyreCompound(status.VisualTyreCompound).String()
 			msg["tyres_age"] = status.TyresAgeLaps
-			msg["fia_flag"] = FIAFlags(status.VehicleFIAFlags)
+			msg["fia_flag"] = FIAFlags(status.VehicleFIAFlags).String()
 			msg["ers_store_energy"] = status.ERSStoreEnergy
 			msg["ers_mode"] = ERSMode(status.ERSDeployMode).String()
 			msg["ers_harvested_lap_mguk"] = status.ERSHarvestedThisLapMGUK
@@ -304,10 +301,10 @@ func (c *Client) Collect() {
 			msg["world_right_y"] = motion.WorldRightDirY
 			msg["world_right_z"] = motion.WorldRightDirZ
 
-			// Physics
 			msg["gforce_lateral"] = motion.GForceLateral
 			msg["gforce_longitudinal"] = motion.GForceLongitudinal
 			msg["gforce_vertical"] = motion.GForceVertical
+
 			msg["yaw"] = motion.Yaw
 			msg["pitch"] = motion.Pitch
 			msg["roll"] = motion.Roll
@@ -346,8 +343,4 @@ type Number interface {
 
 func getTimeInMS[V Number](val V) int64 {
 	return time.Duration(float64(val) * float64(time.Millisecond)).Milliseconds()
-}
-
-func getTimeInSec[V Number](val V) float64 {
-	return time.Duration(float64(val) * float64(time.Second)).Seconds()
 }
