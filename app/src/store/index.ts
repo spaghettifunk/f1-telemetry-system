@@ -1,6 +1,17 @@
 import { Session, Event, Lap, CarTelemetry, CarStatus, MotionData } from '../models/telemetry.model';
 import { defineStore } from 'pinia';
+import { io } from 'socket.io-client';
 import axios from "axios"
+
+const socket = io("ws://localhost:8082");
+
+// receive message from backend
+socket.on("hello", (arg: any) => {
+    console.log(arg);
+});
+
+// send message to backend
+socket.emit("howdy", "stranger");
 
 export type GlobalState = {
     sessions: Session[] | [];

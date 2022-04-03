@@ -22,6 +22,7 @@
     "pinia": "^2.0.12",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.5",
+    "socket.io-client": "^4.4.1",
     "stream-json": "^1.7.4",
     "unplugin-vue-components": "^0.18.5",
     "vfonts": "^0.0.3",

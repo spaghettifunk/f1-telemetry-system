@@ -7,9 +7,6 @@ const telemetryServer = new ClickHouseClient({
     host: 'localhost'
 });
 
-// userID: "7f443b8f-1cad-4d00-ac25-2f1fe444d600"
-// sessionID: -397947032
-
 routes.get('/', (req, res) => {
     return res.json({ version: "v0.0.1" });
 });
