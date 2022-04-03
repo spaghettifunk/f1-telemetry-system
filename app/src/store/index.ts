@@ -1,28 +1,35 @@
-import { Session, Event, Lap, CarTelemetry, CarStatus, MotionData } from '../models/telemetry.model';
+import {
+    CarStatus, CarTelemetry,
+    DriveThroughServed,
+    FastestLap, Weather,
+    Lap, Session, SpeedTrap,
+    MotionData, StopGoServed,
+    Participant, Retirement,
+    Penalty, TeammatePit,
+    RaceWinner
+} from '../models/telemetry.model';
 import { defineStore } from 'pinia';
-import { io } from 'socket.io-client';
 import axios from "axios"
 
-const socket = io("ws://localhost:8082");
-
-// receive message from backend
-socket.on("hello", (arg: any) => {
-    console.log(arg);
-});
-
-// send message to backend
-socket.emit("howdy", "stranger");
-
 export type GlobalState = {
-    sessions: Session[] | [];
-    sessionData: Session[] | [];
+    sessions: Session[];
+    sessionData: Session[];
 
     // this data is queried every time the session changes
-    event: Event | null;
-    laps: Lap[] | [];
-    carTelemetries: CarTelemetry[] | [];
-    carStatuses: CarStatus[] | [];
-    motionsData: MotionData[] | [];
+    participants: Participant[];
+    weather: Weather[];
+    fastestLap: FastestLap | null;
+    Retirements: Retirement[];
+    TeammatePits: TeammatePit[];
+    raceWinner: RaceWinner | null;
+    penalties: Penalty[];
+    speedTraps: SpeedTrap[];
+    StopGoServed: StopGoServed[];
+    driveThroughServed: DriveThroughServed[];
+    carTelemetries: CarTelemetry[];
+    laps: Lap[];
+    carStatuses: CarStatus[];
+    motionsData: MotionData[];
 };
 
 export const useGlobalStore = defineStore({
@@ -31,29 +38,35 @@ export const useGlobalStore = defineStore({
         {
             sessions: [],
             sessionData: [],
-            event: null,
-            laps: [],
+            participants: [],
+            weather: [],
+            fastestLap: null,
+            Retirements: [],
+            TeammatePits: [],
+            raceWinner: null,
+            penalties: [],
+            speedTraps: [],
+            StopGoServed: [],
+            driveThroughServed: [],
             carTelemetries: [],
+            laps: [],
             carStatuses: [],
             motionsData: [],
         } as GlobalState),
     getters: {
-        getSessionData(): Session[] | [] {
+        getSessionData(): Session[] {
             return this.sessionData;
         },
-        getEvents(): Event | null {
-            return this.event;
-        },
-        getLaps(): Lap[] | [] {
+        getLaps(): Lap[] {
             return this.laps;
         },
-        getCarTelemetries(): CarTelemetry[] | [] {
+        getCarTelemetries(): CarTelemetry[] {
             return this.carTelemetries;
         },
-        getCarStatuses(): CarStatus[] | [] {
+        getCarStatuses(): CarStatus[] {
             return this.carStatuses;
         },
-        getMotionsData(): MotionData[] | [] {
+        getMotionsData(): MotionData[] {
             return this.motionsData;
         }
     },
@@ -92,24 +105,6 @@ export const useGlobalStore = defineStore({
                         trackName: row.track_name,
                         trackTemperature: row.track_temperature,
                         weather: row.weather,
-                    }
-                });
-            }
-            catch (error) {
-                alert(error)
-                console.error(error)
-            }
-        },
-        async fetchEvents(userID: string, sessionID: number) {
-            try {
-                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/events`);
-                this.event = result.data.data.map((row: any) => {
-                    return {
-                        userID: userID,
-                        sessionID: sessionID,
-                        time: row.time,
-                        fastestLapMs: row.fastest_lap_ms,
-                        fastestLapStr: row.fastest_lap_str
                     }
                 });
             }
