@@ -7,7 +7,7 @@ import {
     Participant, Retirement,
     Penalty, TeammatePit,
     RaceWinner
-} from '../models/telemetry.model';
+} from "@backend/telemetry.model";
 import { defineStore } from 'pinia';
 import { io } from 'socket.io-client';
 

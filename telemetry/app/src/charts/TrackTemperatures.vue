@@ -15,7 +15,7 @@ import { UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import VChart from 'vue-echarts';
 
-import { useGlobalStore } from '../store/index';
+import { useGlobalStore } from '../store/past';
 
 const globalStore = useGlobalStore();
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ArrowLeft } from '@vicons/carbon'
-import { useGlobalStore } from '../store/index';
+import { useGlobalStore } from '../store/past';
 
 import Engine from '../charts/Engine.vue';
 import TrackTemperatures from '../charts/TrackTemperatures.vue'

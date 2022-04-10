@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Session } from '../models/telemetry.model';
-import { useGlobalStore } from '../store/index';
+import { useGlobalStore } from '../store/past';
 
 const globalStore = useGlobalStore();
 const userID = '7f443b8f-1cad-4d00-ac25-2f1fe444d600';

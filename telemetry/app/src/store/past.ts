@@ -7,11 +7,11 @@ import {
     Participant, Retirement,
     Penalty, TeammatePit,
     RaceWinner
-} from '../models/telemetry.model';
+} from '@backend/telemetry.model';
 import { defineStore } from 'pinia';
 import axios from "axios"
 
-export type GlobalState = {
+export type PastState = {
     sessions: Session[];
     sessionData: Session[];
 
@@ -32,8 +32,8 @@ export type GlobalState = {
     motionsData: MotionData[];
 };
 
-export const useGlobalStore = defineStore({
-    id: "globalStore",
+export const usePastStore = defineStore({
+    id: "pastStore",
     state: () => (
         {
             sessions: [],
@@ -52,7 +52,7 @@ export const useGlobalStore = defineStore({
             laps: [],
             carStatuses: [],
             motionsData: [],
-        } as GlobalState),
+        } as PastState),
     getters: {
         getSessionData(): Session[] { return this.sessionData; },
         getParticipants(): Participant[] { return this.participants; },
@@ -72,138 +72,71 @@ export const useGlobalStore = defineStore({
     },
     actions: {
         allSessionsByUserID(userID: string): any {
-            return this.sessions.filter(session => session.userID == userID);
+            return this.sessions.filter(session => session.user_id == userID);
         },
         async fetchSessions(userID: string) {
             try {
                 const result = await axios.get(`http://localhost:8081/users/${userID}/sessions`);
-                this.sessions = result.data.data.map((row: any) => {
-                    return {
-                        userID: userID,
-                        sessionID: row.session_id,
-                        time: row.time,
-                        sessionType: row.session_type,
-                        trackName: row.track_name,
-                    }
+                this.sessions = result.data.data.map((row: Session) => {
+                    return row;
                 });
             }
             catch (error) {
-                alert(error)
                 console.error(error)
             }
         },
         async fetchSessionData(userID: string, sessionID: number) {
             try {
                 const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}`);
-                this.sessionData = result.data.data.map((row: any) => {
-                    return {
-                        userID: userID,
-                        sessionID: row.session_id,
-                        time: row.time,
-                        airTemperature: row.air_temperature,
-                        sessionType: row.session_type,
-                        trackName: row.track_name,
-                        trackTemperature: row.track_temperature,
-                        weather: row.weather,
-                    }
+                this.sessionData = result.data.data.map((row: Session) => {
+                    return row;
                 });
             }
             catch (error) {
-                alert(error)
                 console.error(error)
             }
         },
         async fetchLaps(userID: string, sessionID: number) {
             try {
                 const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/laps`);
-                this.laps = result.data.data.map((row: any) => {
-                    return {
-                        userID: userID,
-                        sessionID: sessionID,
-                        time: row.time,
-                        resultStatus: row.result_status,
-                        gridStartPosition: row.grid_start_position,
-                        currentPosition: row.current_position,
-                        currentLap: row.current_lap
-                    }
+                this.laps = result.data.data.map((row: Lap) => {
+                    return row;
                 });
             }
             catch (error) {
-                alert(error)
                 console.error(error)
             }
         },
         async fetchCarTelemetries(userID: string, sessionID: number) {
             try {
                 const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/telemetries`);
-                this.carTelemetries = result.data.data.map((row: any) => {
-                    return {
-                        userID: userID,
-                        sessionID: sessionID,
-                        time: row.time,
-                        speed: row.speed,
-                        engineRPM: row.engine_rpm,
-                        engineTemperature: row.engine_temperature,
-                        brakeApplied: row.brake_applied,
-                        throttleApplied: row.throttle_applied,
-                        brakeRL: row.brake_rl,
-                        brakeRR: row.brake_rr,
-                        brakeFL: row.brake_fl,
-                        brakeFR: row.brake_fr,
-                        tyrePressureRL: row.tyre_pressure_rl,
-                        tyrePressureRR: row.tyre_pressure_rr,
-                        tyrePressureFL: row.tyre_pressure_fl,
-                        tyrePressureFR: row.tyre_pressure_fr,
-                        tyreInnerTemperatureRL: row.tyre_inner_temperature_rl,
-                        tyreInnerTemperatureRR: row.tyre_inner_temperature_rr,
-                        tyreInnerTemperatureFL: row.tyre_inner_temperature_fl,
-                        tyreInnerTemperatureFR: row.tyre_inner_temperature_fr,
-                        tyreSurfaceTemperatureRL: row.tyre_surface_temperature_rl,
-                        tyreSurfaceTemperatureRR: row.tyre_surface_temperature_rr,
-                        tyreSurfaceTemperatureFL: row.tyre_surface_temperature_fl,
-                        tyreSurfaceTemperatureFR: row.tyre_surface_temperature_rf,
-                    }
+                this.carTelemetries = result.data.data.map((row: CarTelemetry) => {
+                    return row;
                 });
             }
             catch (error) {
-                alert(error)
                 console.error(error)
             }
         },
         async fetchCarStatuses(userID: string, sessionID: number) {
             try {
                 const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/statuses`);
-                this.carStatuses = result.data.data.map((row: any) => {
-                    return {
-                        userID: userID,
-                        sessionID: sessionID,
-                        time: row.time,
-                        tyresAge: row.tyres_age,
-                        fuelMix: row.fuel_mix,
-                        fuelCapacity: row.fuel_capacity,
-                        fuelCurrent: row.fuel_current,
-                        fuelRemainingInLaps: row.fuel_remanining_in_laps,
-                    }
+                this.carStatuses = result.data.data.map((row: CarStatus) => {
+                    return row;
                 });
             }
             catch (error) {
-                alert(error)
                 console.error(error)
             }
         },
         async fetchMotionsData(userID: string, sessionID: number) {
             try {
                 const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/motions-data`);
-                this.motionsData = result.data.data.map((row: any) => {
-                    return {
-                        userID: userID,
-                        sessionID: sessionID,
-                        time: row.time,
-                    }
+                this.motionsData = result.data.data.map((row: MotionData) => {
+                    return row;
                 });
             }
             catch (error) {
-                alert(error)
                 console.error(error)
             }
         }
