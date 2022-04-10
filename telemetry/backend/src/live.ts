@@ -5,6 +5,19 @@ const kafkaClient = new Kafka({
     brokers: ['kafka:9092'],
 })
 
+async function consumeSession(socket: any) {
+    const consumer = kafkaClient.consumer({ groupId: 'session_group' });
+
+    await consumer.connect();
+    await consumer.subscribe({ topic: 'session' });
+
+    await consumer.run({
+        eachMessage: async ({ topic, partition, message }) => {
+            socket.emit('session', message.value);
+        },
+    });
+}
+
 async function consumeParticipants(socket: any) {
     const consumer = kafkaClient.consumer({ groupId: 'participants_group' });
 
@@ -188,6 +201,7 @@ async function consumeMotionData(socket: any) {
 }
 
 export {
+    consumeSession,
     consumeParticipants,
     consumeWeather,
     consumeFastestLap,

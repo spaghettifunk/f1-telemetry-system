@@ -3,9 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "start:dev": "vite",
+    "start:build": "vue-tsc --noEmit && vite build",
+    "start:preview": "vite preview"
   },
   "dependencies": {
     "@vicons/antd": "^0.12.0",

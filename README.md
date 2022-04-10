@@ -2,6 +2,12 @@
 
 App for visualising F1 2021 telemetries
 
+## Architecture
+
+The below diagram represents the architecture of the system
+
+![Architecture](./docs/images/telemetry.png)
+
 ## Dependencies
 
 Have `Go` installed.
@@ -29,7 +35,3 @@ Now, you should get the IP of your local machine in the local-network. In genera
 Open F1 2021 and go to the Settings. Open the Telemtry settings and insert the IP address you saved before and use `20777` as port. **IMPORTANT:** your console needs to be in the same network as your laptop otherwise the discovery doesn't work.
 
 Once all the steps above are done, every time you press on a button you should see a JSON message appear on the console. Once you start a session, data will begin flooding towards your console. If everything went well, you should be able to query Clickhouse with `SELECT * FROM car_telemetry` or other tables and get some rows in it.
-
-## TODO:
-
-- [ ] I need a table where SessionID/Time/UserID are aggregated and there is only 1 entry per SessionID. Currently, the telemtry keeps recording the timestamp for the same SessionID. In this way, I can create a timeline for the User.

@@ -2,7 +2,7 @@ import {
     CarStatus, CarTelemetry,
     DriveThroughServed,
     FastestLap, Weather,
-    Lap, SpeedTrap,
+    Lap, SpeedTrap, Session,
     MotionData, StopGoServed,
     Participant, Retirement,
     Penalty, TeammatePit,
@@ -14,6 +14,7 @@ import { io } from 'socket.io-client';
 const socket = io("ws://localhost:8082");
 
 export type LiveState = {
+    session: Session[];
     participants: Participant[];
     weather: Weather[];
     fastestLap: FastestLap | null;
@@ -31,6 +32,7 @@ export type LiveState = {
 };
 
 var liveState: LiveState = {
+    session: [],
     participants: [],
     weather: [],
     fastestLap: null,
@@ -51,6 +53,7 @@ export const useLiveStore = defineStore({
     id: "liveStore",
     state: () => liveState,
     getters: {
+        getSession(): Session[] { return liveState.session; },
         getParticipants(): Participant[] { return liveState.participants; },
         getWeather(): Weather[] { return liveState.weather; },
         getFastestLap(): FastestLap | null { return liveState.fastestLap; },
@@ -71,6 +74,11 @@ export const useLiveStore = defineStore({
 // All the events for getting data from Kafka
 socket.on("participants", (...args: Participant[]) => {
     liveState.participants.push(...args);
+});
+
+socket.on("session", (...args: Session[]) => {
+    console.log(...args);
+    liveState.session.push(...args);
 });
 
 socket.on("weather", (...args: Weather[]) => {
