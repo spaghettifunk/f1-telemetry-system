@@ -17,12 +17,12 @@ export type LiveState = {
     participants: Participant[];
     weather: Weather[];
     fastestLap: FastestLap | null;
-    Retirements: Retirement[];
-    TeammatePits: TeammatePit[];
+    retirements: Retirement[];
+    teammatePits: TeammatePit[];
     raceWinner: RaceWinner | null;
     penalties: Penalty[];
     speedTraps: SpeedTrap[];
-    StopGoServed: StopGoServed[];
+    stopGoServed: StopGoServed[];
     driveThroughServed: DriveThroughServed[];
     carTelemetries: CarTelemetry[];
     laps: Lap[];
@@ -30,36 +30,97 @@ export type LiveState = {
     motionsData: MotionData[];
 };
 
+var liveState: LiveState = {
+    participants: [],
+    weather: [],
+    fastestLap: null,
+    retirements: [],
+    teammatePits: [],
+    raceWinner: null,
+    penalties: [],
+    speedTraps: [],
+    stopGoServed: [],
+    driveThroughServed: [],
+    carTelemetries: [],
+    laps: [],
+    carStatuses: [],
+    motionsData: [],
+}
+
 export const useLiveStore = defineStore({
     id: "liveStore",
-    state: () => (
-        {
-            participants: [],
-            weather: [],
-            fastestLap: null,
-            Retirements: [],
-            TeammatePits: [],
-            raceWinner: null,
-            penalties: [],
-            speedTraps: [],
-            StopGoServed: [],
-            driveThroughServed: [],
-            carTelemetries: [],
-            laps: [],
-            carStatuses: [],
-            motionsData: [],
-        } as LiveState),
+    state: () => liveState,
     getters: {
-        getCarTelemetries(): CarTelemetry[] {
-            return this.carTelemetries;
-        },
-    },
-    actions: {
-        fetchCarTelemetries() {
-            socket.on("car_telemetry", (...args: CarTelemetry[]) => {
-                this.carTelemetries.push(...args);
-            });
-        },
-
+        getParticipants(): Participant[] { return liveState.participants; },
+        getWeather(): Weather[] { return liveState.weather; },
+        getFastestLap(): FastestLap | null { return liveState.fastestLap; },
+        getRetirements(): Retirement[] { return liveState.retirements; },
+        getTeammatePits(): TeammatePit[] { return liveState.teammatePits; },
+        getRaceWinner(): RaceWinner | null { return liveState.raceWinner; },
+        getPenalties(): Penalty[] { return liveState.penalties; },
+        getSpeedTraps(): SpeedTrap[] { return liveState.speedTraps; },
+        getStopGoServed(): StopGoServed[] { return liveState.stopGoServed; },
+        getDriveThroughServed(): DriveThroughServed[] { return liveState.driveThroughServed; },
+        getCarStatuses(): CarStatus[] { return liveState.carStatuses; },
+        getLaps(): Lap[] { return liveState.laps; },
+        getCarTelemetries(): CarTelemetry[] { return liveState.carTelemetries; },
+        getMotionData(): MotionData[] { return liveState.motionsData; }
     }
+});
+
+// All the events for getting data from Kafka
+socket.on("participants", (...args: Participant[]) => {
+    liveState.participants.push(...args);
+});
+
+socket.on("weather", (...args: Weather[]) => {
+    liveState.weather.push(...args);
+});
+
+socket.on("fastest_lap", (args: FastestLap) => {
+    liveState.fastestLap = args;
+});
+
+socket.on("teammate_pit", (...args: TeammatePit[]) => {
+    liveState.teammatePits.push(...args);
+});
+
+socket.on("race_winner", (args: RaceWinner) => {
+    liveState.raceWinner = args;
+});
+
+socket.on("penalty", (...args: Penalty[]) => {
+    liveState.penalties.push(...args);
+});
+
+socket.on("speed_trap", (...args: SpeedTrap[]) => {
+    liveState.speedTraps.push(...args);
+});
+
+socket.on("stop_go_served", (...args: StopGoServed[]) => {
+    liveState.stopGoServed.push(...args);
+});
+
+socket.on("drive_through_served", (...args: DriveThroughServed[]) => {
+    liveState.driveThroughServed.push(...args);
+});
+
+socket.on("retirement", (...args: Retirement[]) => {
+    liveState.retirements.push(...args);
+});
+
+socket.on("car_telemetry", (...args: CarTelemetry[]) => {
+    liveState.carTelemetries.push(...args);
+});
+
+socket.on("lap", (...args: Lap[]) => {
+    liveState.laps.push(...args);
+});
+
+socket.on("car_status", (...args: CarStatus[]) => {
+    liveState.carStatuses.push(...args);
+});
+
+socket.on("motion_data", (...args: MotionData[]) => {
+    liveState.motionsData.push(...args);
 });

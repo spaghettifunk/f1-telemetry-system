@@ -19,12 +19,12 @@ export type GlobalState = {
     participants: Participant[];
     weather: Weather[];
     fastestLap: FastestLap | null;
-    Retirements: Retirement[];
-    TeammatePits: TeammatePit[];
+    retirements: Retirement[];
+    teammatePits: TeammatePit[];
     raceWinner: RaceWinner | null;
     penalties: Penalty[];
     speedTraps: SpeedTrap[];
-    StopGoServed: StopGoServed[];
+    stopGoServed: StopGoServed[];
     driveThroughServed: DriveThroughServed[];
     carTelemetries: CarTelemetry[];
     laps: Lap[];
@@ -41,12 +41,12 @@ export const useGlobalStore = defineStore({
             participants: [],
             weather: [],
             fastestLap: null,
-            Retirements: [],
-            TeammatePits: [],
+            retirements: [],
+            teammatePits: [],
             raceWinner: null,
             penalties: [],
             speedTraps: [],
-            StopGoServed: [],
+            stopGoServed: [],
             driveThroughServed: [],
             carTelemetries: [],
             laps: [],
@@ -54,21 +54,21 @@ export const useGlobalStore = defineStore({
             motionsData: [],
         } as GlobalState),
     getters: {
-        getSessionData(): Session[] {
-            return this.sessionData;
-        },
-        getLaps(): Lap[] {
-            return this.laps;
-        },
-        getCarTelemetries(): CarTelemetry[] {
-            return this.carTelemetries;
-        },
-        getCarStatuses(): CarStatus[] {
-            return this.carStatuses;
-        },
-        getMotionsData(): MotionData[] {
-            return this.motionsData;
-        }
+        getSessionData(): Session[] { return this.sessionData; },
+        getParticipants(): Participant[] { return this.participants; },
+        getWeather(): Weather[] { return this.weather; },
+        getFastestLap(): FastestLap | null { return this.fastestLap; },
+        getRetirements(): Retirement[] { return this.retirements; },
+        getTeammatePits(): TeammatePit[] { return this.teammatePits; },
+        getRaceWinner(): RaceWinner | null { return this.raceWinner; },
+        getPenalties(): Penalty[] { return this.penalties; },
+        getSpeedTraps(): SpeedTrap[] { return this.speedTraps; },
+        getStopGoServed(): StopGoServed[] { return this.stopGoServed; },
+        getDriveThroughServed(): DriveThroughServed[] { return this.driveThroughServed; },
+        getCarStatuses(): CarStatus[] { return this.carStatuses; },
+        getLaps(): Lap[] { return this.laps; },
+        getCarTelemetries(): CarTelemetry[] { return this.carTelemetries; },
+        getMotionData(): MotionData[] { return this.motionsData; }
     },
     actions: {
         allSessionsByUserID(userID: string): any {

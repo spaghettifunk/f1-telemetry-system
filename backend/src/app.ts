@@ -2,6 +2,22 @@ import express from 'express';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import routes from './routes';
+import {
+    consumeParticipants,
+    consumeWeather,
+    consumeFastestLap,
+    consumeTeammatePit,
+    consumeRaceWinner,
+    consumePenalty,
+    consumeSpeedTrap,
+    consumeStopGoServed,
+    consumeDriveThroughServed,
+    consumeRetirement,
+    consumeCarTelemetry,
+    consumeLap,
+    consumeCarStatus,
+    consumeMotionData
+} from './live';
 
 class App {
     public server: express.Application;
@@ -42,13 +58,20 @@ class App {
         this.socket.on("connection", function (socket: any) {
             console.log("a user connected...");
 
-            // send message to frontend
-            socket.emit("hello", "hello from backend");
-
-            // receive message from client
-            socket.on("howdy", (arg: any) => {
-                console.log(arg);
-            });
+            consumeParticipants(socket);
+            consumeWeather(socket);
+            consumeFastestLap(socket);
+            consumeTeammatePit(socket);
+            consumeRaceWinner(socket);
+            consumePenalty(socket);
+            consumeSpeedTrap(socket);
+            consumeStopGoServed(socket);
+            consumeDriveThroughServed(socket);
+            consumeRetirement(socket);
+            consumeCarTelemetry(socket);
+            consumeLap(socket);
+            consumeCarStatus(socket);
+            consumeMotionData(socket);
         });
     }
 }
