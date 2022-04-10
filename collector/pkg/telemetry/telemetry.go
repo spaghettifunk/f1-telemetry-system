@@ -14,6 +14,7 @@ import (
 	"github.com/anilmisirlioglu/f1-telemetry-go/pkg/packets"
 	"github.com/anilmisirlioglu/f1-telemetry-go/pkg/telemetry"
 
+	"github.com/spaghettifunk/f1-telemetry-system/collector/pkg/logger"
 	"github.com/spaghettifunk/f1-telemetry-system/collector/pkg/producers"
 )
 
@@ -23,8 +24,9 @@ type Client struct {
 	*telemetry.Client
 
 	ProducerLog producers.ProducerLog
+	UserID      string
 
-	UserID string
+	logger *logger.TelemetryLogger
 }
 
 // WithKafka sets the producer to Kafka
@@ -37,17 +39,7 @@ func WithKafka(brokers string) producers.ProducerLog {
 	return kp
 }
 
-// WithClickhouse sets the producer to the Clickhouse database
-func WithClickhouse(address, port string) producers.ProducerLog {
-	cp, err := producers.NewClickHouse(address, port)
-	if err != nil {
-		log.Fatalf("cannot create Clickhouse producer: %s", err.Error())
-		os.Exit(1)
-	}
-	return cp
-}
-
-func New(address string, port int, producer producers.ProducerLog) (*Client, error) {
+func New(address string, port int, producer producers.ProducerLog, tl *logger.TelemetryLogger) (*Client, error) {
 	client, err := telemetry.NewClientByCustomIpAddressAndPort(address, port)
 	if err != nil {
 		return nil, err
@@ -60,6 +52,7 @@ func New(address string, port int, producer producers.ProducerLog) (*Client, err
 		client,
 		producer,
 		userID,
+		tl,
 	}
 	return c, nil
 }
@@ -72,7 +65,7 @@ func (t Timespan) Format(format string) string {
 }
 
 func (c *Client) Collect() {
-	log.Println("Collecting events...")
+	c.logger.WriteInfo("Collecting events...")
 
 	c.OnParticipantsPacket(func(packet *packets.PacketParticipantsData) {
 		msg := map[string]interface{}{}
@@ -328,8 +321,7 @@ func (c *Client) WriteToProducer(msg map[string]interface{}, name string, sessio
 		panic(err)
 	}
 
-	// DEBUG
-	log.Println(string(b))
+	c.logger.WriteDebug(string(b))
 
 	c.ProducerLog.Write(producers.PacketLog{
 		Name:    name,

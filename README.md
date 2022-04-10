@@ -24,7 +24,7 @@ Open your browser and go to `http://localhost:8080` and you should see Kowl appe
 
 Open DBeaver (or whatever tool you chose) and run all the queries in the file `/configs/clickhouse/tables.sql`. Once you have done that, Clickhouse is ready to listen to Kafka on specific topics (check the SQL file for more info). Don't worry if data is not yet in kafka or the topics are not created yet. Clickhouse consumers are pretty smart.
 
-You can now go to the `collector` folder and run `go run main.go`. A message like the one below should appear.
+You can now go to the `collector` folder and run `go run main.go --debug=[false/true]`. A message like the one below should appear.
 
 ```
 2022/03/29 14:09:02 Initiating collection of packets on 0.0.0.0:20777
