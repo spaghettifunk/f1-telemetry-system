@@ -2,7 +2,7 @@ CREATE TABLE participants (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,    
+    session_id Int64,    
     ai_controlled Nullable(Int8) DEFAULT NULL,
     driver_id Nullable(Int8) DEFAULT NULL,
     driver_name Nullable(String) DEFAULT NULL,
@@ -19,7 +19,7 @@ ORDER BY (session_id, time);
 CREATE TABLE participants_queue (
     user_id UUID,
     time DateTime,
-    session_id Int32,
+    session_id Int64,
     ai_controlled Nullable(Int8) DEFAULT NULL,
     driver_id Nullable(Int8) DEFAULT NULL,
     driver_name Nullable(String) DEFAULT NULL,
@@ -35,7 +35,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'participants',
        kafka_group_name = 'participants_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW participants_queue_mv TO participants AS
 SELECT user_id, session_id, time, 
@@ -56,7 +56,7 @@ CREATE TABLE session (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,    
+    session_id Int64,    
     session_type Nullable(String) DEFAULT NULL,
     track_name Nullable(String) DEFAULT NULL,
     track_id Nullable(Int8) DEFAULT NULL,
@@ -69,7 +69,7 @@ ORDER BY (session_id, time);
 CREATE TABLE session_queue (
     user_id UUID,
     time DateTime,
-    session_id Int32,    
+    session_id Int64,    
     session_type Nullable(String) DEFAULT NULL,
     track_name Nullable(String) DEFAULT NULL,
     track_id Nullable(Int8) DEFAULT NULL,
@@ -81,7 +81,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'session',
        kafka_group_name = 'session_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 
 CREATE MATERIALIZED VIEW session_queue_mv TO session AS
@@ -99,7 +99,7 @@ CREATE TABLE weather (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,
+    session_id Int64,
     weather_type Nullable(String) DEFAULT NULL,
     track_temperature Nullable(Float32) DEFAULT NULL,
     air_temperature Nullable(Int32) DEFAULT NULL,             
@@ -117,7 +117,7 @@ ORDER BY (session_id, time);
 CREATE TABLE weather_queue (
     user_id UUID,
     time DateTime,
-    session_id Int32,
+    session_id Int64,
     weather_type Nullable(String) DEFAULT NULL,
     track_temperature Nullable(Float32) DEFAULT NULL,
     air_temperature Nullable(Int32) DEFAULT NULL,
@@ -134,7 +134,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'weather',
        kafka_group_name = 'weather_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 
 CREATE MATERIALIZED VIEW weather_queue_mv TO weather AS
@@ -157,7 +157,7 @@ CREATE TABLE fastest_lap (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,
+    session_id Int64,
     fastest_lap_ms Nullable(Int64) DEFAULT NULL,
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 ) Engine = MergeTree
@@ -167,7 +167,7 @@ ORDER BY (session_id, time);
 CREATE TABLE fastest_lap_queue (
     user_id UUID,
     time DateTime ,
-    session_id Int32,
+    session_id Int64,
     fastest_lap_ms Nullable(Int64) DEFAULT NULL,
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 )
@@ -176,7 +176,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'fastest_lap',
        kafka_group_name = 'fastest_lap_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW fastest_lap_queue_mv TO fastest_lap AS
 SELECT user_id, session_id, time,
@@ -190,7 +190,7 @@ CREATE TABLE retirement (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,    
+    session_id Int64,    
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 ) Engine = MergeTree
 PARTITION BY toYYYYMM(time)
@@ -199,7 +199,7 @@ ORDER BY (session_id, time);
 CREATE TABLE retirement_queue (
     user_id UUID,
     time DateTime ,
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 )
 ENGINE = Kafka
@@ -207,7 +207,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'retirement',
        kafka_group_name = 'retirement_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW retirement_queue_mv TO retirement AS
 SELECT user_id, session_id, time, driver_vehicle_id
@@ -219,7 +219,7 @@ CREATE TABLE teammate_pit (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,    
+    session_id Int64,    
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 ) Engine = MergeTree
 PARTITION BY toYYYYMM(time)
@@ -228,7 +228,7 @@ ORDER BY (session_id, time);
 CREATE TABLE teammate_pit_queue (
     user_id UUID,
     time DateTime ,
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 )
 ENGINE = Kafka
@@ -236,7 +236,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'teammate_pit',
        kafka_group_name = 'teammate_pit_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW teammate_pit_queue_mv TO teammate_pit AS
 SELECT user_id, session_id, time, driver_vehicle_id
@@ -248,7 +248,7 @@ CREATE TABLE race_winner (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,    
+    session_id Int64,    
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 ) Engine = MergeTree
 PARTITION BY toYYYYMM(time)
@@ -257,7 +257,7 @@ ORDER BY (session_id, time);
 CREATE TABLE race_winner_queue (
     user_id UUID,
     time DateTime ,
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 )
 ENGINE = Kafka
@@ -265,7 +265,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'race_winner',
        kafka_group_name = 'race_winner_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW race_winner_queue_mv TO race_winner AS
 SELECT user_id, session_id, time, driver_vehicle_id
@@ -277,7 +277,7 @@ CREATE TABLE penalty (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,
+    session_id Int64,
     penalty_type Nullable(String) DEFAULT NULL,
     infrangement_type Nullable(String) DEFAULT NULL,
     lap_number Nullable(Int8) DEFAULT NULL,
@@ -292,7 +292,7 @@ ORDER BY (session_id, time);
 CREATE TABLE penalty_queue (
     user_id UUID,
     time DateTime ,
-    session_id Int32,
+    session_id Int64,
     penalty_type Nullable(String) DEFAULT NULL,
     infrangement_type Nullable(String) DEFAULT NULL,
     lap_number Nullable(Int8) DEFAULT NULL,
@@ -306,7 +306,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'penalty',
        kafka_group_name = 'penalty_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW penalty_queue_mv TO penalty AS
 SELECT user_id, session_id, time,
@@ -325,7 +325,7 @@ CREATE TABLE speed_trap (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,
+    session_id Int64,
     driver_fastest_in_session Nullable(Int8) DEFAULT NULL,
     overall_fastest_in_session Nullable(Int8) DEFAULT NULL,
     speed Nullable(Float32) DEFAULT NULL,
@@ -337,7 +337,7 @@ ORDER BY (session_id, time);
 CREATE TABLE speed_trap_queue (
     user_id UUID,
     time DateTime ,
-    session_id Int32,
+    session_id Int64,
     driver_fastest_in_session Nullable(Int8) DEFAULT NULL,
     overall_fastest_in_session Nullable(Int8) DEFAULT NULL,
     speed Nullable(Float32) DEFAULT NULL,
@@ -348,7 +348,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'speed_trap',
        kafka_group_name = 'speed_trap_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW speed_trap_queue_mv TO speed_trap AS
 SELECT user_id, session_id, time,
@@ -365,7 +365,7 @@ CREATE TABLE stop_go_served (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,    
+    session_id Int64,    
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 ) Engine = MergeTree
 PARTITION BY toYYYYMM(time)
@@ -374,7 +374,7 @@ ORDER BY (session_id, time);
 CREATE TABLE stop_go_served_queue (
     user_id UUID,
     time DateTime ,
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 )
 ENGINE = Kafka
@@ -382,7 +382,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'stop_go_served',
        kafka_group_name = 'stop_go_served_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW stop_go_served_queue_mv TO stop_go_served AS
 SELECT user_id, session_id, time, driver_vehicle_id
@@ -394,7 +394,7 @@ CREATE TABLE drive_through_served (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,    
+    session_id Int64,    
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 ) Engine = MergeTree
 PARTITION BY toYYYYMM(time)
@@ -403,7 +403,7 @@ ORDER BY (session_id, time);
 CREATE TABLE drive_through_served_queue (
     user_id UUID,
     time DateTime ,
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int8) DEFAULT NULL
 )
 ENGINE = Kafka
@@ -411,7 +411,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'drive_through_served',
        kafka_group_name = 'drive_through_served_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW drive_through_served_queue_mv TO drive_through_served AS
 SELECT user_id, session_id, time, driver_vehicle_id
@@ -423,7 +423,7 @@ CREATE TABLE car_telemetry (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int8) DEFAULT NULL,
     speed Nullable(Int32) DEFAULT NULL,
     throttle_applied Nullable(Float32) DEFAULT NULL,
@@ -458,7 +458,7 @@ ORDER BY (session_id, time);
 CREATE TABLE car_telemetry_queue (
     user_id UUID,
     time DateTime ,
-    session_id Int32, 
+    session_id Int64, 
     driver_vehicle_id Nullable(Int8) DEFAULT NULL,
     speed Nullable(Int32) DEFAULT NULL,
     throttle_applied Nullable(Float32) DEFAULT NULL,
@@ -492,7 +492,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'car_telemetry',
        kafka_group_name = 'car_telemetry_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW car_telemetry_queue_mv TO car_telemetry AS
 SELECT user_id, session_id, time,
@@ -531,7 +531,7 @@ CREATE TABLE lap (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int64) DEFAULT NULL,
     last_lap_time_ms Nullable(Int64) DEFAULT NULL,
     current_lap_time_ms Nullable(Int64) DEFAULT NULL,
@@ -564,7 +564,7 @@ ORDER BY (session_id, time);
 CREATE TABLE lap_queue (
     user_id UUID,
     time DateTime,
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int64) DEFAULT NULL,
     last_lap_time_ms Nullable(Int64) DEFAULT NULL,
     current_lap_time_ms Nullable(Int64) DEFAULT NULL,
@@ -596,7 +596,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'lap',
        kafka_group_name = 'lap_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 
 CREATE MATERIALIZED VIEW lap_queue_mv TO lap AS
@@ -634,7 +634,7 @@ CREATE TABLE car_status (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int64) DEFAULT NULL,
     fuel_mix Nullable(String) DEFAULT NULL,
     fuel_capacity Nullable(Float32) DEFAULT NULL,
@@ -660,7 +660,7 @@ ORDER BY (session_id, time);
 CREATE TABLE car_status_queue (
     user_id UUID,
     time DateTime,
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int64) DEFAULT NULL,
     fuel_mix Nullable(String) DEFAULT NULL,
     fuel_capacity Nullable(Float32) DEFAULT NULL,
@@ -685,7 +685,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'car_status',
        kafka_group_name = 'car_status_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 CREATE MATERIALIZED VIEW car_status_queue_mv TO car_status AS
 SELECT user_id, session_id, time, 
@@ -715,7 +715,7 @@ CREATE TABLE motion_data (
     user_id UUID,
     time DateTime,
     date ALIAS toDate(time),
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int8) DEFAULT NULL,
     world_position_x Nullable(Float32) DEFAULT NULL,
     world_position_y Nullable(Float32) DEFAULT NULL,
@@ -742,7 +742,7 @@ ORDER BY (session_id, time);
 CREATE TABLE motion_data_queue (
     user_id UUID,
     time DateTime,
-    session_id Int32,
+    session_id Int64,
     driver_vehicle_id Nullable(Int8) DEFAULT NULL,
     world_position_x Nullable(Float32) DEFAULT NULL,
     world_position_y Nullable(Float32) DEFAULT NULL,
@@ -768,7 +768,7 @@ SETTINGS kafka_broker_list = 'kafka:29092',
        kafka_topic_list = 'motion_data',
        kafka_group_name = 'motion_data_consumer_group1',
        kafka_format = 'JSONEachRow',
-       kafka_num_consumers = 1;
+       kafka_num_consumers = 3;
 
 
 CREATE MATERIALIZED VIEW motion_data_queue_mv TO motion_data AS
