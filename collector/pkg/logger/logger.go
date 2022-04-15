@@ -32,9 +32,11 @@ func New(debug bool) (*TelemetryLogger, error) {
 	return t, nil
 }
 
-func (t *TelemetryLogger) WriteDebug(msg string) {
+// WriteDebug uses []byte instead of string to avoid unecessery string conversion
+// before being logged
+func (t *TelemetryLogger) WriteDebug(msg []byte) {
 	if t.logger.Core().Enabled(zap.DebugLevel) {
-		t.logger.Debug(msg)
+		t.logger.Debug(string(msg))
 	}
 }
 

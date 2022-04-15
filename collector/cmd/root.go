@@ -39,7 +39,6 @@ var rootCmd = &cobra.Command{
 		}
 
 		tl.WriteInfo(fmt.Sprintf("Initiating collection of packets on %s:%d", "0.0.0.0", 20777))
-		tl.WriteDebug("test test test")
 
 		// wait exit signal
 		c := make(chan os.Signal, 1)

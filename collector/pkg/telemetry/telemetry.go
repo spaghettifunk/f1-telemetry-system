@@ -74,7 +74,7 @@ func (c *Client) Collect() {
 			msg["ai_controlled"] = participant.AIControlled
 			msg["driver_id"] = participant.DriverID
 			msg["driver_name"] = participant.NameToString()
-			msg["driver_nationality"] = participant.Nationality
+			msg["driver_nationality"] = Nationality(participant.Nationality).String()
 			msg["driver_race_number"] = participant.RaceNumber
 			msg["driver_vehicle_id"] = i
 			msg["is_teammate"] = participant.MyTeam
@@ -318,10 +318,12 @@ func (c *Client) WriteToProducer(msg map[string]interface{}, name string, sessio
 	// write to producer
 	b, err := json.Marshal(msg)
 	if err != nil {
-		panic(err)
+		// log the error and discard the event
+		c.logger.WriteError(err.Error())
+		return
 	}
 
-	c.logger.WriteDebug(string(b))
+	c.logger.WriteDebug(b)
 
 	c.ProducerLog.Write(producers.PacketLog{
 		Name:    name,
