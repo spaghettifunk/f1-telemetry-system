@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, DebuggerEvent } from "vue";
 
 import * as echarts from 'echarts/core';
-import { GridComponent } from 'echarts/components';
+import { GridComponent, DataZoomComponent } from 'echarts/components';
 import { LineChart } from 'echarts/charts';
 import { UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import VChart from 'vue-echarts'
 
-import { useGlobalStore } from '../store/index';
+import { useGlobalStore } from '../store/past';
 
 const globalStore = useGlobalStore();
 
@@ -16,16 +16,17 @@ echarts.use([
     GridComponent,
     LineChart,
     CanvasRenderer,
-    UniversalTransition
+    UniversalTransition,
+    DataZoomComponent
 ]);
 
 var option = computed(() => (
     {
         title: {
-            text: 'Engine'
+            text: 'Throttle vs Brake vs Speed'
         },
         legend: {
-            data: ['RPM', 'Speed']
+            data: ['Throttle', 'Speed', 'Brake']
         },
         tooltip: {
             trigger: 'axis',
@@ -36,6 +37,24 @@ var option = computed(() => (
                 }
             }
         },
+        dataZoom: [
+            {
+                show: true,
+                realtime: true,
+                start: 30,
+                end: 70,
+                // height: 70,
+                xAxisIndex: [0, 1]
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                // height: 70,
+                start: 30,
+                end: 70,
+                xAxisIndex: [0, 1]
+            }
+        ],
         xAxis: {
             data: globalStore.carTelemetries.map(t => t.time),
             type: 'category',
@@ -43,31 +62,12 @@ var option = computed(() => (
                 type: 'shadow'
             }
         },
-        dataZoom: [
-            {
-                show: true,
-                realtime: true,
-                start: 30,
-                end: 70,
-                xAxisIndex: [0, 1]
-            },
-            {
-                type: 'inside',
-                realtime: true,
-                start: 30,
-                end: 70,
-                xAxisIndex: [0, 1]
-            }
-        ],
         yAxis: [
             {
                 type: 'value',
-                name: 'RPM',
+                name: 'Throttle',
                 min: 0,
-                max: 17000,
-                axisLabel: {
-                    formatter: '{value} rpm'
-                }
+                max: 1,
             },
             {
                 type: 'value',
@@ -81,41 +81,29 @@ var option = computed(() => (
         ],
         series: [
             {
-                name: 'RPM',
+                name: 'Throttle',
                 type: 'line',
-                data: globalStore.carTelemetries.map(t => t.engineRPM)
+                data: globalStore.carTelemetries.map(t => t.throttleApplied)
             },
             {
                 name: 'Speed',
                 type: 'line',
                 yAxisIndex: 1,
-                data: globalStore.carTelemetries.map(t => t.speed)
+                data: globalStore.carTelemetries.map(t => t.speed),
+                tooltip: {
+                    valueFormatter: function (value: any) {
+                        return value + ' Km/h';
+                    }
+                },
+            },
+            {
+                name: 'Brake',
+                type: 'line',
+                data: globalStore.carTelemetries.map(t => t.brakeApplied)
             }
         ]
     })
 );
-
-/*
-
-{
-                type: 'value',
-                name: 'temperature',
-                min: 70,
-                max: 120,
-                axisLabel: {
-                    formatter: '{value} °C'
-                }
-            },
-
-
-            {
-                name: 'Temperature',
-                type: 'line',
-                yAxisIndex: 1,
-                data: globalStore.carTelemetries.map(t => t.engineTemperature)
-            },
-
-*/
 
 </script>
 
@@ -124,5 +112,4 @@ var option = computed(() => (
 </template>
 
 <style>
-
 </style>

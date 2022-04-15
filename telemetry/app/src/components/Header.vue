@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useGlobalStore } from '../store/index';
+import { useGlobalStore } from '../store/past';
 
 const globalStore = useGlobalStore();
 </script>

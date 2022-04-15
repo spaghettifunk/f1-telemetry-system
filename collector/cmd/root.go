@@ -2,16 +2,17 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 
+	"github.com/spaghettifunk/f1-telemetry-system/collector/pkg/logger"
 	"github.com/spaghettifunk/f1-telemetry-system/collector/pkg/telemetry"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
-	debug = false
+	debugFlag = "debug"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -24,20 +25,27 @@ var rootCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		client, err := telemetry.New("0.0.0.0", 20777, telemetry.WithKafka("localhost:9092"))
+		isDebug, _ := cmd.Flags().GetBool(debugFlag)
+		tl, err := logger.New(isDebug)
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
 
-		log.Printf("Initiating collection of packets on %s:%d", "0.0.0.0", 20777)
+		client, err := telemetry.New("0.0.0.0", 20777, telemetry.WithKafka("localhost:9092"), tl)
+		if err != nil {
+			tl.WriteError(err.Error())
+			os.Exit(1)
+		}
+
+		tl.WriteInfo(fmt.Sprintf("Initiating collection of packets on %s:%d", "0.0.0.0", 20777))
 
 		// wait exit signal
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, os.Interrupt)
 		go func() {
 			<-c
-			log.Println("Shutting down collector...")
+			tl.WriteInfo("Shutting down collector...")
 			os.Exit(0)
 		}()
 
@@ -55,14 +63,9 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	f := rootCmd.Flags()
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.collector.yaml)")
+	f.Bool(debugFlag, false, "Enable DEBUG mode to visualize the messages incoming from the Telemetry system")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.Flags().BoolP("debug", "d", debug, "Enable DEBUG mode to visualize the messages incoming from the Telemtry system")
+	viper.BindPFlags(f)
 }

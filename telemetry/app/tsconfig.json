@@ -5,6 +5,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "strict": true,
+    "paths": { "@backend/*": ["../backend/src/models/*"], },
     "jsx": "preserve",
     "sourceMap": true,
     "resolveJsonModule": true,
