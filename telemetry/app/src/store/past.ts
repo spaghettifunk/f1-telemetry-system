@@ -7,13 +7,15 @@ import {
     Participant, Retirement,
     Penalty, TeammatePit,
     RaceWinner
-} from '@backend/telemetry.model';
+} from '../../../models/telemetry.model';
 import { defineStore } from 'pinia';
 import axios from "axios"
 
+const baseApiURL = "http://localhost:8082";
+
 export type PastState = {
     sessions: Session[];
-    sessionData: Session[];
+    sessionData: Session | null;
 
     // this data is queried every time the session changes
     participants: Participant[];
@@ -37,7 +39,7 @@ export const usePastStore = defineStore({
     state: () => (
         {
             sessions: [],
-            sessionData: [],
+            sessionData: null,
             participants: [],
             weather: [],
             fastestLap: null,
@@ -54,7 +56,7 @@ export const usePastStore = defineStore({
             motionsData: [],
         } as PastState),
     getters: {
-        getSessionData(): Session[] { return this.sessionData; },
+        getSessionData(): Session | null { return this.sessionData; },
         getParticipants(): Participant[] { return this.participants; },
         getWeather(): Weather[] { return this.weather; },
         getFastestLap(): FastestLap | null { return this.fastestLap; },
@@ -71,70 +73,177 @@ export const usePastStore = defineStore({
         getMotionData(): MotionData[] { return this.motionsData; }
     },
     actions: {
-        allSessionsByUserID(userID: string): any {
-            return this.sessions.filter(session => session.user_id == userID);
-        },
         async fetchSessions(userID: string) {
             try {
-                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions`);
-                this.sessions = result.data.data.map((row: Session) => {
-                    return row;
-                });
+                await axios.get<Session[]>(`${baseApiURL}/users/${userID}/sessions`)
+                    .then(response => {
+                        this.sessions = response.data;
+                    });
             }
             catch (error) {
                 console.error(error)
             }
         },
-        async fetchSessionData(userID: string, sessionID: number) {
+        async fetchSessionData(userID: string, sessionID: string) {
             try {
-                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}`);
-                this.sessionData = result.data.data.map((row: Session) => {
-                    return row;
-                });
+                await axios.get<Session>(`${baseApiURL}/users/${userID}/sessions/${sessionID}`)
+                    .then(response => {
+                        this.sessionData = response.data;
+                    });
             }
             catch (error) {
                 console.error(error)
             }
         },
-        async fetchLaps(userID: string, sessionID: number) {
+        async fetchParticipants(userID: string, sessionID: string) {
             try {
-                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/laps`);
-                this.laps = result.data.data.map((row: Lap) => {
-                    return row;
-                });
+                await axios.get<Participant[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/participants`)
+                    .then(response => {
+                        this.participants = response.data;
+                    });
             }
             catch (error) {
                 console.error(error)
             }
         },
-        async fetchCarTelemetries(userID: string, sessionID: number) {
+        async fetchWeather(userID: string, sessionID: string) {
             try {
-                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/telemetries`);
-                this.carTelemetries = result.data.data.map((row: CarTelemetry) => {
-                    return row;
-                });
+                await axios.get<Weather[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/weather`)
+                    .then(response => {
+                        this.weather = response.data;
+                    });
             }
             catch (error) {
                 console.error(error)
             }
         },
-        async fetchCarStatuses(userID: string, sessionID: number) {
+        async fetchFastestLap(userID: string, sessionID: string) {
             try {
-                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/statuses`);
-                this.carStatuses = result.data.data.map((row: CarStatus) => {
-                    return row;
-                });
+                await axios.get<FastestLap>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/fastest-lap`)
+                    .then(response => {
+                        this.fastestLap = response.data;
+                    });
             }
             catch (error) {
                 console.error(error)
             }
         },
-        async fetchMotionsData(userID: string, sessionID: number) {
+        async fetchRetirements(userID: string, sessionID: string) {
             try {
-                const result = await axios.get(`http://localhost:8081/users/${userID}/sessions/${sessionID}/motions-data`);
-                this.motionsData = result.data.data.map((row: MotionData) => {
-                    return row;
-                });
+                await axios.get<Retirement[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/retirements`)
+                    .then(response => {
+                        this.retirements = response.data;
+                    });
+            }
+            catch (error) {
+                console.error(error)
+            }
+        },
+        async fetchTeammatePits(userID: string, sessionID: string) {
+            try {
+                await axios.get<TeammatePit[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/teammate-pits`)
+                    .then(response => {
+                        this.teammatePits = response.data;
+                    });
+            }
+            catch (error) {
+                console.error(error)
+            }
+        },
+        async fetchRaceWinner(userID: string, sessionID: string) {
+            try {
+                await axios.get<RaceWinner>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/race-winner`)
+                    .then(response => {
+                        this.raceWinner = response.data;
+                    });
+            }
+            catch (error) {
+                console.error(error)
+            }
+        },
+        async fetchPenalties(userID: string, sessionID: string) {
+            try {
+                await axios.get<Penalty[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/penalties`)
+                    .then(response => {
+                        this.penalties = response.data;
+                    });
+            }
+            catch (error) {
+                console.error(error)
+            }
+        },
+        async fetchSpeedTraps(userID: string, sessionID: string) {
+            try {
+                await axios.get<SpeedTrap[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/speed-traps`)
+                    .then(response => {
+                        this.speedTraps = response.data;
+                    });
+            }
+            catch (error) {
+                console.error(error)
+            }
+        },
+        async fetchStopGoServed(userID: string, sessionID: string) {
+            try {
+                await axios.get<StopGoServed[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/stop-go-served`)
+                    .then(response => {
+                        this.stopGoServed = response.data;
+                    });
+            }
+            catch (error) {
+                console.error(error)
+            }
+        },
+        async fetchDriveThroughServed(userID: string, sessionID: string) {
+            try {
+                await axios.get<DriveThroughServed[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/drive-through-served`)
+                    .then(response => {
+                        this.driveThroughServed = response.data;
+                    });
+            }
+            catch (error) {
+                console.error(error)
+            }
+        },
+        async fetchLaps(userID: string, sessionID: string) {
+            try {
+                await axios.get<Lap[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/laps`)
+                    .then(response => {
+                        this.laps = response.data;
+                    });
+            }
+            catch (error) {
+                console.error(error)
+            }
+        },
+        async fetchCarTelemetries(userID: string, sessionID: string) {
+            try {
+                await axios.get<CarTelemetry[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/car-telemetry`)
+                    .then(response => {
+                        this.carTelemetries = response.data;
+                    });
+            }
+            catch (error) {
+                console.error(error)
+            }
+        },
+        async fetchCarStatuses(userID: string, sessionID: string) {
+            try {
+                await axios.get<CarStatus[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/car-status`)
+                    .then(response => {
+                        this.carStatuses = response.data;
+                    });
+            }
+            catch (error) {
+                console.error(error)
+            }
+        },
+        async fetchMotionsData(userID: string, sessionID: string) {
+            try {
+                await axios.get<MotionData[]>(`${baseApiURL}/users/${userID}/sessions/${sessionID}/motions-data`)
+                    .then(response => {
+                        this.motionsData = response.data;
+                    });
             }
             catch (error) {
                 console.error(error)

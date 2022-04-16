@@ -8,9 +8,9 @@ import { UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import VChart from 'vue-echarts'
 
-import { useGlobalStore } from '../store/past';
+import { usePastStore } from '../store/past';
 
-const globalStore = useGlobalStore();
+const pastStore = usePastStore();
 
 echarts.use([
     GridComponent,
@@ -56,7 +56,7 @@ var option = computed(() => (
             }
         ],
         xAxis: {
-            data: globalStore.carTelemetries.map(t => t.time),
+            data: pastStore.carTelemetries.map(t => t.time),
             type: 'category',
             axisPointer: {
                 type: 'shadow'
@@ -83,13 +83,13 @@ var option = computed(() => (
             {
                 name: 'Throttle',
                 type: 'line',
-                data: globalStore.carTelemetries.map(t => t.throttleApplied)
+                data: pastStore.carTelemetries.map(t => t.throttle_applied)
             },
             {
                 name: 'Speed',
                 type: 'line',
                 yAxisIndex: 1,
-                data: globalStore.carTelemetries.map(t => t.speed),
+                data: pastStore.carTelemetries.map(t => t.speed),
                 tooltip: {
                     valueFormatter: function (value: any) {
                         return value + ' Km/h';
@@ -99,7 +99,7 @@ var option = computed(() => (
             {
                 name: 'Brake',
                 type: 'line',
-                data: globalStore.carTelemetries.map(t => t.brakeApplied)
+                data: pastStore.carTelemetries.map(t => t.brake_applied)
             }
         ]
     })

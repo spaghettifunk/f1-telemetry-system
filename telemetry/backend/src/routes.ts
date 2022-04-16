@@ -25,10 +25,7 @@ routes.get('/users/:id/sessions', (req, res) => {
         .then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -53,10 +50,7 @@ routes.get('/users/:id/sessions/:sessionId', (req, res) => {
         .then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -80,10 +74,7 @@ routes.get('/users/:id/sessions/:sessionId/participants', (req, res) => {
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -107,10 +98,7 @@ routes.get('/users/:id/sessions/:sessionId/weather', (req, res) => {
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -134,10 +122,7 @@ routes.get('/users/:id/sessions/:sessionId/fastest-lap', (req, res) => {
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -161,10 +146,7 @@ routes.get('/users/:id/sessions/:sessionId/retirements', (req, res) => {
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -188,10 +170,7 @@ routes.get('/users/:id/sessions/:sessionId/teammate-pits', (req, res) => {
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -215,10 +194,7 @@ routes.get('/users/:id/sessions/:sessionId/race-winner', (req, res) => {
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -242,10 +218,7 @@ routes.get('/users/:id/sessions/:sessionId/penalties', (req, res) => {
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -269,10 +242,7 @@ routes.get('/users/:id/sessions/:sessionId/speed-traps', (req, res) => {
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -296,10 +266,7 @@ routes.get('/users/:id/sessions/:sessionId/stop-go-served', (req, res) => {
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -323,10 +290,7 @@ routes.get('/users/:id/sessions/:sessionId/drive-through-served', (req, res) => 
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -351,10 +315,7 @@ routes.get('/users/:id/sessions/:sessionId/laps', (req, res) => {
         .then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -379,10 +340,7 @@ routes.get('/users/:id/sessions/:sessionId/car-telemetry', (req, res) => {
         .then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -406,10 +364,7 @@ routes.get('/users/:id/sessions/:sessionId/car-status', (req, res) => {
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {
@@ -434,10 +389,7 @@ routes.get('/users/:id/sessions/:sessionId/motions-data', (req, res) => {
         .then((rows) => {
             // all retrieved rows
             res.statusCode = 200;
-            res.send({
-                count: rows.length,
-                data: rows
-            });
+            res.json(rows);
             return res;
         })
         .catch((err) => {

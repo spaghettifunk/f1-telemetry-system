@@ -1,5 +1,7 @@
-import express from 'express';
-import { Server } from 'socket.io';
+import * as express from "express";
+import * as http from "http";
+import * as socketio from "socket.io";
+
 import cors from 'cors';
 import routes from './routes';
 import {
@@ -20,18 +22,19 @@ import {
 } from './live';
 
 class App {
-    public server: express.Application;
-    public socket: Server;
+    private app: express.Application;
+    private httpServer: http.Server;
+    private socket: socketio.Server;
 
-    private httpServerPort = 8081;
-    private socketServerPort = 8082;
+    private httpServerPort = 8082;
+    // private socketServerPort = 8082;
     private frontendURL = "http://localhost:3000";
 
     constructor() {
-        this.server = express();
-        this.server.set("port", this.httpServerPort);
+        this.app = express.default();
+        this.httpServer = http.createServer(this.app);
 
-        this.socket = new Server(this.socketServerPort, {
+        this.socket = new socketio.Server(this.httpServer, {
             cors: { origin: this.frontendURL },
         });
 
@@ -40,17 +43,17 @@ class App {
     }
 
     middlewares() {
-        this.server.use(cors({ origin: this.frontendURL }));
-        this.server.use(express.json());
+        this.app.use(cors({ origin: this.frontendURL }));
+        this.app.use(express.json());
     }
 
     routes() {
-        this.server.use(routes);
+        this.app.use(routes);
     }
 
     // used for querying Clickhouse and get past session's data
     public listenHttp() {
-        this.server.listen(this.httpServerPort);
+        this.httpServer.listen(this.httpServerPort);
     }
 
     // used for real-time telemetry data
@@ -72,6 +75,11 @@ class App {
             consumeLap(socket);
             consumeCarStatus(socket);
             consumeMotionData(socket);
+
+            //Whenever someone disconnects this piece of code executed
+            socket.on('disconnect', function () {
+                console.log('A user disconnected');
+            });
         });
     }
 }

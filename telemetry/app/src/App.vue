@@ -1,5 +1,5 @@
 <script lang="ts">
-import 'vfonts/Lato.css'
+// import 'vfonts/Lato.css'
 
 import { defineComponent } from "vue";
 import Header from './components/Header.vue'
@@ -43,10 +43,9 @@ export default defineComponent({
         </n-layout-footer>
       </n-layout>
     </n-layout>
-  </n-space>
+    </n-space>
 </template>
 
 <style>
-#app {
-}
+#app {}
 </style>

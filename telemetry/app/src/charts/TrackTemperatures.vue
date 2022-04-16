@@ -15,9 +15,9 @@ import { UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import VChart from 'vue-echarts';
 
-import { useGlobalStore } from '../store/past';
+import { usePastStore } from '../store/past';
 
-const globalStore = useGlobalStore();
+const pastStore = usePastStore();
 
 echarts.use([
     TitleComponent,
@@ -39,7 +39,7 @@ var option = computed(() => (
         },
         legend: {},
         xAxis: {
-            data: globalStore.sessionData.map(s => s.time)
+            data: pastStore.weather.map(s => s.time)
         },
         yAxis: {
             type: 'value',
@@ -51,7 +51,7 @@ var option = computed(() => (
             {
                 name: 'Air',
                 type: 'line',
-                data: globalStore.sessionData.map(s => s.airTemperature),
+                data: pastStore.weather.map(s => s.air_temperature),
                 markPoint: {
                     data: [
                         { type: 'max', name: 'Max' },
@@ -62,7 +62,7 @@ var option = computed(() => (
             {
                 name: 'Track',
                 type: 'line',
-                data: globalStore.sessionData.map(s => s.trackTemperature),
+                data: pastStore.weather.map(s => s.track_temperature),
                 markPoint: {
                     data: [
                         { type: 'max', name: 'Max' },

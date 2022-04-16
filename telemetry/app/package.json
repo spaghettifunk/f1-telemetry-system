@@ -26,6 +26,7 @@
     "stream-json": "^1.7.4",
     "unplugin-vue-components": "^0.18.5",
     "vfonts": "^0.0.3",
+    "vite-tsconfig-paths": "^3.4.1",
     "vue": "^3.2.25",
     "vue-echarts": "^6.0.2"
   },

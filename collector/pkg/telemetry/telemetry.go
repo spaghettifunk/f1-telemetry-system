@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/anilmisirlioglu/f1-telemetry-go/pkg/env/event"
@@ -312,7 +313,7 @@ func (c *Client) Collect() {
 func (c *Client) WriteToProducer(msg map[string]interface{}, name string, sessionID uint64) {
 	// enrich with default metadata
 	msg["user_id"] = c.UserID
-	msg["session_id"] = sessionID
+	msg["session_id"] = strconv.FormatUint(sessionID, 10)
 	msg["time"] = time.Now().Format("2006-01-02 15:04:05")
 
 	// write to producer

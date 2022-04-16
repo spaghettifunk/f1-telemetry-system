@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { ArrowLeft } from '@vicons/carbon'
-import { useGlobalStore } from '../store/past';
+import { usePastStore } from '../store/past';
 
 import Engine from '../charts/Engine.vue';
 import TrackTemperatures from '../charts/TrackTemperatures.vue'
 import ThrottleBrake from '../charts/ThrottleBrake.vue';
 
-const globalStore = useGlobalStore();
+const pastStore = usePastStore();
 
 </script>
 
 <template>
-    <div v-if="globalStore.sessionData.length === 0">
+    <div v-if="pastStore.sessionData === null">
         <n-empty description="Select a session from the Sidebar">
             <template #icon>
                 <n-icon>
@@ -26,8 +26,7 @@ const globalStore = useGlobalStore();
     <div v-else class="main">
         <Engine />
         <TrackTemperatures />
-        <ThrottleBrake />
-    </div>
+        <ThrottleBrake />   </div>
 </template>
 
 <style>

@@ -2,7 +2,7 @@ import { Kafka } from "kafkajs";
 
 const kafkaClient = new Kafka({
     clientId: 'f1-telemetry-system',
-    brokers: ['kafka:9092'],
+    brokers: ['localhost:9092', 'localhost:9093', 'localhost:9094'],
 })
 
 async function consumeSession(socket: any) {

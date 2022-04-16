@@ -8,9 +8,9 @@ import { UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import VChart from 'vue-echarts'
 
-import { useGlobalStore } from '../store/past';
+import { usePastStore } from '../store/past';
 
-const globalStore = useGlobalStore();
+const pastStore = usePastStore();
 
 echarts.use([
     GridComponent,
@@ -37,7 +37,7 @@ var option = computed(() => (
             }
         },
         xAxis: {
-            data: globalStore.carTelemetries.map(t => t.time),
+            data: pastStore.carTelemetries.map(t => t.time),
             type: 'category',
             axisPointer: {
                 type: 'shadow'
@@ -83,39 +83,17 @@ var option = computed(() => (
             {
                 name: 'RPM',
                 type: 'line',
-                data: globalStore.carTelemetries.map(t => t.engineRPM)
+                data: pastStore.carTelemetries.map(t => t.engine_rpm)
             },
             {
                 name: 'Speed',
                 type: 'line',
                 yAxisIndex: 1,
-                data: globalStore.carTelemetries.map(t => t.speed)
+                data: pastStore.carTelemetries.map(t => t.speed)
             }
         ]
     })
 );
-
-/*
-
-{
-                type: 'value',
-                name: 'temperature',
-                min: 70,
-                max: 120,
-                axisLabel: {
-                    formatter: '{value} °C'
-                }
-            },
-
-
-            {
-                name: 'Temperature',
-                type: 'line',
-                yAxisIndex: 1,
-                data: globalStore.carTelemetries.map(t => t.engineTemperature)
-            },
-
-*/
 
 </script>
 
@@ -124,5 +102,4 @@ var option = computed(() => (
 </template>
 
 <style>
-
 </style>

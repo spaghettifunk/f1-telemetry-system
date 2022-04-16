@@ -2,7 +2,7 @@
 interface Session {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     session_type?: string;
     track_name?: string;
     track_id?: number;
@@ -13,7 +13,7 @@ interface Session {
 interface Lap {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     driver_vehicle_id?: number;
     last_lap_time_ms?: number;
     current_lap_time_ms?: number;
@@ -44,7 +44,7 @@ interface Lap {
 interface CarTelemetry {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     driver_vehicle_id?: number;
     speed?: number;
     throttle_applied?: number;
@@ -77,7 +77,7 @@ interface CarTelemetry {
 interface CarStatus {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     driver_vehicle_id?: number;
     fuel_mix?: string;
     fuel_capacity?: number;
@@ -101,7 +101,7 @@ interface CarStatus {
 interface MotionData {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     driver_vehicle_id?: number;
     world_position_x?: number;
     world_position_y?: number;
@@ -126,7 +126,7 @@ interface MotionData {
 interface Participant {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     air_temperature?: number;
     ai_controlled?: number;
     driver_id?: number;
@@ -142,7 +142,7 @@ interface Participant {
 interface Weather {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     weather_type?: string;
     track_temperature?: number;
     air_temperature?: number;
@@ -158,7 +158,7 @@ interface Weather {
 interface FastestLap {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     fastestLapMS?: number;
     driver_vehicle_id?: number;
 }
@@ -166,28 +166,28 @@ interface FastestLap {
 interface Retirement {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     driver_vehicle_id?: number;
 }
 
 interface TeammatePit {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     driver_vehicle_id?: number;
 }
 
 interface RaceWinner {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     driver_vehicle_id?: number;
 }
 
 interface Penalty {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     penalty_type?: string;
     infrangement_type?: string;
     lap_number?: number;
@@ -200,7 +200,7 @@ interface Penalty {
 interface SpeedTrap {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     driver_fastest_in_session?: number;
     overall_fastest_in_session?: number;
     speed?: number;
@@ -210,14 +210,14 @@ interface SpeedTrap {
 interface StopGoServed {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     driver_vehicle_id?: number;
 }
 
 interface DriveThroughServed {
     user_id: string;
     time?: string;
-    session_id: number;
+    session_id: string;
     driver_vehicle_id?: number;
 }
 

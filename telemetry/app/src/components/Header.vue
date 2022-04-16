@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { useGlobalStore } from '../store/past';
+import { usePastStore } from '../store/past';
 
-const globalStore = useGlobalStore();
+const pastStore = usePastStore();
 </script>
 
 <template>
-  <div v-if="globalStore.sessionData.length === 0"></div>
+  <div v-if="pastStore.sessionData === null"></div>
   <div v-else>
     <n-page-header>
       <n-grid :cols="5">
         <n-gi>
-          <n-statistic label="Session ID" v-model:value="globalStore.sessionData[0].sessionID" />
+          <n-statistic label="Session ID" v-model:value="pastStore.sessionData.session_id" />
         </n-gi>
         <n-gi>
           <n-statistic label="Current Lap" value="1" />
@@ -26,9 +26,7 @@ const globalStore = useGlobalStore();
         </n-gi>
       </n-grid>
       <template #title>
-        <a
-          style="text-decoration: none; color: inherit"
-        >{{ globalStore.sessionData[0].sessionType }}</a>
+        <a style="text-decoration: none; color: inherit">{{ pastStore.sessionData.session_type }}</a>
       </template>
       <template #header></template>
       <template #avatar>
