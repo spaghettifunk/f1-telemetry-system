@@ -67,10 +67,21 @@ routes.get('/users/:id/sessions/:sessionId/participants', (req, res) => {
 
     telemetryServer
         .queryPromise(`
-            SELECT *
+            SELECT 
+                ai_controlled,
+                driver_id,
+                driver_name,
+                driver_nationality,
+                driver_race_number,
+                driver_vehicle_id,
+                is_teammate,
+                team_id,
+                team_name
             FROM participants
             WHERE session_id = '${sessionID}' AND user_id = '${id}'
-            LIMIT 22
+            GROUP BY ai_controlled, driver_id, driver_name, driver_nationality, 
+                     driver_race_number, driver_vehicle_id, is_teammate, team_id, 
+                     team_name
         `).then((rows) => {
             // all retrieved rows
             res.statusCode = 200;

@@ -82,7 +82,7 @@ func (c *Client) Collect() {
 			msg["team_id"] = participant.TeamID
 			msg["team_name"] = team.Team(participant.TeamID).String()
 
-			c.WriteToProducer(msg, "participants", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "participants", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 		}
 	})
 
@@ -96,7 +96,7 @@ func (c *Client) Collect() {
 			msg["track_total_laps"] = packet.TotalLaps
 			msg["track_length"] = packet.TrackLength
 
-			c.WriteToProducer(msg, "session", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "session", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 		}
 
 		// weather data
@@ -115,7 +115,7 @@ func (c *Client) Collect() {
 				msg["forecast_track_temperature"] = forecast.TrackTemperature
 				msg["forecast_track_temperature_change"] = forecast.TrackTemperatureChange
 
-				c.WriteToProducer(msg, "weather", packet.Header.SessionUID)
+				c.WriteToProducer(msg, "weather", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 			}
 		}
 	})
@@ -128,22 +128,22 @@ func (c *Client) Collect() {
 			fp := packet.EventDetails.(*packets.FastestLap)
 			msg["fastest_lap_ms"] = getTimeInMS(fp.LapTime)
 			msg["driver_vehicle_id"] = fp.VehicleIdx
-			c.WriteToProducer(msg, "fastest_lap", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "fastest_lap", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 			break
 		case event.Retirement:
 			rp := packet.EventDetails.(*packets.Retirement)
 			msg["driver_vehicle_id"] = rp.VehicleIdx
-			c.WriteToProducer(msg, "retirement", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "retirement", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 			break
 		case event.TeamMateInPit:
 			tmmp := packet.EventDetails.(*packets.TeamMateInPits)
 			msg["driver_vehicle_id"] = tmmp.VehicleIdx
-			c.WriteToProducer(msg, "teammate_pit", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "teammate_pit", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 			break
 		case event.RaceWinner:
 			rwp := packet.EventDetails.(*packets.RaceWinner)
 			msg["driver_vehicle_id"] = rwp.VehicleIdx
-			c.WriteToProducer(msg, "race_winner", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "race_winner", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 			break
 		case event.PenaltyIssued:
 			pp := packet.EventDetails.(*packets.Penalty)
@@ -154,7 +154,7 @@ func (c *Client) Collect() {
 			msg["penalty_time"] = getTimeInMS(pp.Time)
 			msg["driver_vehicle_id"] = pp.VehicleIdx
 			msg["other_driver_vehicle_id"] = pp.OtherVehicleIdx
-			c.WriteToProducer(msg, "penalty", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "penalty", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 			break
 		case event.SpeedTrapTriggered:
 			stp := packet.EventDetails.(*packets.SpeedTrap)
@@ -162,17 +162,17 @@ func (c *Client) Collect() {
 			msg["overall_fastest_in_session"] = stp.OverallFastestInSession
 			msg["speed"] = stp.Speed
 			msg["driver_vehicle_id"] = stp.VehicleIdx
-			c.WriteToProducer(msg, "speed_trap", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "speed_trap", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 			break
 		case event.StopGoServed:
 			stp := packet.EventDetails.(*packets.StopGoPenaltyServed)
 			msg["driver_vehicle_id"] = stp.VehicleIdx
-			c.WriteToProducer(msg, "stop_go_served", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "stop_go_served", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 			break
 		case event.DriveThroughServed:
 			dtp := packet.EventDetails.(*packets.DriveThroughPenaltyServed)
 			msg["driver_vehicle_id"] = dtp.VehicleIdx
-			c.WriteToProducer(msg, "drive_through_served", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "drive_through_served", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 			break
 		}
 	})
@@ -210,7 +210,7 @@ func (c *Client) Collect() {
 				msg[tyreInnerTemperatureID] = car.TyresInnerTemperature[i]
 				msg[tyreSurfaceTemperatureID] = car.TyresSurfaceTemperature[i]
 			}
-			c.WriteToProducer(msg, "car_telemetry", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "car_telemetry", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 		}
 	})
 
@@ -244,7 +244,7 @@ func (c *Client) Collect() {
 			msg["pit_stop_timer_in_ms"] = getTimeInMS(lap.PitStopTimerInMS)
 			msg["pit_stop_should_serve_penalty"] = lap.PitStopShouldServePen
 
-			c.WriteToProducer(msg, "lap", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "lap", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 		}
 	})
 
@@ -271,7 +271,7 @@ func (c *Client) Collect() {
 			msg["ers_harvested_lap_mguh"] = status.ERSHarvestedThisLapMGUH
 			msg["ers_deployed_lap"] = status.ERSDeployedThisLap
 
-			c.WriteToProducer(msg, "car_status", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "car_status", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 		}
 	})
 
@@ -303,17 +303,18 @@ func (c *Client) Collect() {
 			msg["pitch"] = motion.Pitch
 			msg["roll"] = motion.Roll
 
-			c.WriteToProducer(msg, "motion_data", packet.Header.SessionUID)
+			c.WriteToProducer(msg, "motion_data", packet.Header.SessionUID, packet.Header.PlayerCarIndex)
 		}
 	})
 
 	c.Run() // run F1 Telemetry Client
 }
 
-func (c *Client) WriteToProducer(msg map[string]interface{}, name string, sessionID uint64) {
+func (c *Client) WriteToProducer(msg map[string]interface{}, name string, sessionID uint64, playerCarIndex uint8) {
 	// enrich with default metadata
 	msg["user_id"] = c.UserID
 	msg["session_id"] = strconv.FormatUint(sessionID, 10)
+	msg["player_car_index"] = playerCarIndex
 	msg["time"] = time.Now().Format("2006-01-02 15:04:05")
 
 	// write to producer

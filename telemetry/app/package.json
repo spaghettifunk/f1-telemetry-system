@@ -28,6 +28,7 @@
     "vfonts": "^0.0.3",
     "vite-tsconfig-paths": "^3.4.1",
     "vue": "^3.2.25",
+    "vue-country-flag": "^2.3.2",
     "vue-echarts": "^6.0.2"
   },
   "devDependencies": {

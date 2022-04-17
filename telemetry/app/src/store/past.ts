@@ -14,6 +14,9 @@ import axios from "axios"
 const baseApiURL = "http://localhost:8082";
 
 export type PastState = {
+    currentSessionID: string;
+    currentUserID: string;
+
     sessions: Session[];
     sessionData: Session | null;
 
@@ -38,6 +41,8 @@ export const usePastStore = defineStore({
     id: "pastStore",
     state: () => (
         {
+            currentSessionID: "",
+            currentUserID: "",
             sessions: [],
             sessionData: null,
             participants: [],
@@ -86,10 +91,9 @@ export const usePastStore = defineStore({
         },
         async fetchSessionData(userID: string, sessionID: string) {
             try {
-                await axios.get<Session>(`${baseApiURL}/users/${userID}/sessions/${sessionID}`)
-                    .then(response => {
-                        this.sessionData = response.data;
-                    });
+                this.currentSessionID = sessionID;
+                this.currentUserID = userID;
+                this.sessionData = this.sessions.filter(s => s.session_id == sessionID)[0];
             }
             catch (error) {
                 console.error(error)

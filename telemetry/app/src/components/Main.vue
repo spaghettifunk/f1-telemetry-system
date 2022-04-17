@@ -5,6 +5,7 @@ import { usePastStore } from '../store/past';
 import Engine from '../charts/Engine.vue';
 import TrackTemperatures from '../charts/TrackTemperatures.vue'
 import ThrottleBrake from '../charts/ThrottleBrake.vue';
+import Participants from '../charts/Participants.vue';
 
 const pastStore = usePastStore();
 
@@ -24,9 +25,7 @@ const pastStore = usePastStore();
         </n-empty>
     </div>
     <div v-else class="main">
-        <Engine />
-        <TrackTemperatures />
-        <ThrottleBrake />   </div>
+        <Participants />   </div>
 </template>
 
 <style>

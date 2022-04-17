@@ -1,32 +1,40 @@
 <script setup lang="ts">
-import { usePastStore } from '../store/past';
+import { onBeforeUpdate, ref } from "vue";
+import { usePastStore } from "../store/past";
 
 const pastStore = usePastStore();
+const dataRef = ref({} as any);
+
+onBeforeUpdate(() => {
+  pastStore
+    .fetchSessionData(pastStore.currentUserID, pastStore.currentSessionID)
+    .then(() => {
+      if (pastStore.getSessionData != null) {
+        let sessData = pastStore.getSessionData;
+        dataRef.value = {
+          sessionID: pastStore.currentSessionID,
+          trackName: sessData.track_name,
+          type: sessData.session_type,
+        };
+      }
+    });
+});
 </script>
 
 <template>
-  <div v-if="pastStore.sessionData === null"></div>
+  <div v-if="pastStore.getSessionData === null"></div>
   <div v-else>
     <n-page-header>
-      <n-grid :cols="5">
+      <n-grid :cols="2">
         <n-gi>
-          <n-statistic label="Session ID" v-model:value="pastStore.sessionData.session_id" />
+          <n-statistic label="Session ID" v-model:value="dataRef.sessionID" />
         </n-gi>
         <n-gi>
-          <n-statistic label="Current Lap" value="1" />
-        </n-gi>
-        <n-gi>
-          <n-statistic label="Position" value="1" />
-        </n-gi>
-        <n-gi>
-          <n-statistic label="Fastest Lap" value="1:26:236" />
-        </n-gi>
-        <n-gi>
-          <n-statistic label="Weather" value="Sunny" />
+          <n-statistic label="Grand Prix" v-model:value="dataRef.trackName" />
         </n-gi>
       </n-grid>
       <template #title>
-        <a style="text-decoration: none; color: inherit">{{ pastStore.sessionData.session_type }}</a>
+        <a style="text-decoration: none; color: inherit">{{ dataRef.type }}</a>
       </template>
       <template #header></template>
       <template #avatar>
@@ -36,5 +44,4 @@ const pastStore = usePastStore();
   </div>
 </template>
 
-<style>
-</style>
+<style></style>
